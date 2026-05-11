@@ -23,7 +23,7 @@ can_write_file_as_app_user() {
     gosu "$APP_USER:$APP_GROUP" test -w "$1"
 }
 
-directory_needs_repair() {
+has_unwritable_mount_path() {
     dir="$1"
 
     if ! can_write_dir_as_app_user "$dir"; then
@@ -38,12 +38,22 @@ directory_needs_repair() {
         done
     fi
 
-    mismatched_child="$(
-        find "$dir" -mindepth 1 -maxdepth 1 \
+    return 1
+}
+
+directory_needs_repair() {
+    dir="$1"
+
+    if has_unwritable_mount_path "$dir"; then
+        return 0
+    fi
+
+    mismatched_path="$(
+        find "$dir" \
             \( ! -user "$APP_UID" -o ! -group "$APP_GID" \) \
             -print -quit 2>/dev/null || true
     )"
-    if [ -n "$mismatched_child" ]; then
+    if [ -n "$mismatched_path" ]; then
         return 0
     fi
 
@@ -61,12 +71,16 @@ if [ "$(id -u)" = "0" ]; then
             continue
         fi
 
-        if ! chown -R "$APP_UID:$APP_GID" "$dir"; then
-            warn "WARN: unable to set ownership for $dir; check read-only, rootless, or NFS mount permissions if writes fail."
+        if chown -R "$APP_UID:$APP_GID" "$dir"; then
+            if ! chmod -R u+rwX "$dir"; then
+                warn "WARN: unable to adjust owner permissions for $dir after ownership repair; check read-only, rootless, or NFS mount permissions if writes fail."
+            fi
+        else
+            warn "WARN: unable to set ownership for $dir; skipping owner-only chmod because it would not grant writes to $APP_USER without ownership."
         fi
 
-        if ! chmod -R u+rwX "$dir"; then
-            warn "WARN: unable to make $dir writable for $APP_USER; check read-only, rootless, or NFS mount permissions if writes fail."
+        if has_unwritable_mount_path "$dir"; then
+            warn "WARN: $dir is still not writable by $APP_USER after permission repair; check host mount ownership or read-only, rootless, and NFS mount settings."
         fi
     done
 
