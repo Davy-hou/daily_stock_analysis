@@ -108,6 +108,17 @@ class TestReportRenderer(unittest.TestCase):
         self.assertNotIn("分析模型", hidden)
         self.assertNotIn("gemini/gemini-2.5-flash", hidden)
 
+    def test_render_markdown_footer_uses_consistent_separator(self) -> None:
+        r = _make_result(model_used="gemini/gemini-2.5-flash")
+
+        with patch("src.services.report_renderer.get_config", return_value=_make_renderer_config(True)):
+            out = render("markdown", [r], summary_only=True)
+
+        self.assertIsNotNone(out)
+        self.assertIn("报告生成时间：", out)
+        self.assertIn("分析模型：gemini/gemini-2.5-flash", out)
+        self.assertNotIn("分析模型: gemini/gemini-2.5-flash", out)
+
     def test_render_markdown_in_english(self) -> None:
         """Markdown renderer switches headings and summary labels for English reports."""
         r = _make_result(
