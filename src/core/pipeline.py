@@ -1045,8 +1045,8 @@ class StockAnalysisPipeline:
                         query_id=query_id,
                         report_type=report_type.value,
                         news_content=None,
-                        context_snapshot=history_context,
-                        save_snapshot=self.save_context_snapshot
+                        context_snapshot=agent_context_snapshot,
+                        save_snapshot=self.save_context_snapshot,
                     )
                     record_history_run(
                         report_saved=bool(saved_count),
