@@ -116,6 +116,7 @@ describe('AnalysisContextSummary', () => {
     const panel = screen.getByTestId('analysis-context-summary');
     expect(panel).not.toHaveAttribute('open');
     expect(screen.getAllByText('Input Blocks')[0]).toBeVisible();
+    expect(screen.getByText('Shows inputs included in this LLM run, not provider run success')).toBeVisible();
     expect(screen.getAllByText('Available 1')[0]).toBeVisible();
     expect(screen.getAllByText('Missing 1')[0]).toBeVisible();
     expect(screen.getAllByText('Fetch failed 1')[0]).toBeVisible();
@@ -283,6 +284,8 @@ describe('ReportSummary analysis context placement', () => {
     const news = screen.getByText('相关资讯');
     const diagnostics = screen.getByTestId('run-diagnostics');
     const contextSummary = screen.getByTestId('analysis-context-summary');
+    expect(contextSummary).not.toHaveAttribute('open');
+    expect(diagnostics).not.toHaveAttribute('open');
     const traceability = screen.getByText('数据追溯');
 
     expect(strategy.compareDocumentPosition(news) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();

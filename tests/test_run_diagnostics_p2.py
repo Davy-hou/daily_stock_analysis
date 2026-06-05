@@ -320,6 +320,37 @@ class RunDiagnosticsP2TestCase(unittest.TestCase):
         self.assertIn("后续检索", news["message"])
         self.assertEqual(news["details"]["analysis_input_status"], "missing")
 
+    def test_news_results_with_missing_analysis_input_are_degraded(self) -> None:
+        summary = build_run_diagnostic_summary(
+            context_snapshot={
+                "diagnostics": _diagnostic_snapshot(),
+                "news_result_count": 3,
+                "analysis_context_pack_overview": _analysis_context_overview(
+                    blocks=[
+                        {
+                            "key": "news",
+                            "label": "新闻",
+                            "status": "missing",
+                            "source": None,
+                            "warnings": [],
+                            "missing_reasons": ["news_context_missing"],
+                        }
+                    ]
+                ),
+            },
+            raw_result={"success": True, "model_used": "deepseek-chat"},
+            report_saved=True,
+        )
+
+        news = summary["components"]["news"]
+        self.assertEqual(summary["status"], "degraded")
+        self.assertEqual(news["status"], "degraded")
+        self.assertEqual(news["details"]["record_count"], 3)
+        self.assertEqual(news["details"]["analysis_input_status"], "missing")
+        self.assertEqual(news["details"]["evidence_scope"], "retrieval_vs_analysis_input")
+        self.assertIn("新闻检索返回 3 条结果", news["message"])
+        self.assertIn("未进入本次分析输入", news["message"])
+
     def test_summary_marks_llm_failure_as_failed(self) -> None:
         diagnostics = _diagnostic_snapshot()
         diagnostics["llm_runs"] = [

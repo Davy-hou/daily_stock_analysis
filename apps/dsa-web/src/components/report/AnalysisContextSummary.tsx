@@ -63,6 +63,7 @@ const TEXT = {
     warnings: '告警',
     missingReasons: '缺失原因',
     inputScope: '本次分析输入',
+    evidenceScope: '仅代表进入本次 LLM 的输入，不等同于数据源运行成功',
     qualityScore: '质量分',
     limitations: '数据限制',
     newsResultCount: '新闻结果数',
@@ -92,6 +93,7 @@ const TEXT = {
     warnings: 'Warnings',
     missingReasons: 'Missing Reasons',
     inputScope: 'Analysis Input',
+    evidenceScope: 'Shows inputs included in this LLM run, not provider run success',
     qualityScore: 'Quality',
     limitations: 'Data Limitations',
     newsResultCount: 'News Results',
@@ -229,6 +231,9 @@ export const AnalysisContextSummary: React.FC<AnalysisContextSummaryProps> = ({
               <span className="label-uppercase">{text.eyebrow}</span>
               <span className="mt-0.5 block truncate text-base font-semibold text-foreground">
                 {text.title}
+              </span>
+              <span className="mt-1 block text-xs leading-5 text-muted-text">
+                {text.evidenceScope}
               </span>
             </span>
           </div>

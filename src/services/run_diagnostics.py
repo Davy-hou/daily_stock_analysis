@@ -669,6 +669,22 @@ def _news_component(context_snapshot: Dict[str, Any], raw_result: Dict[str, Any]
     news_result_count = context_snapshot.get("news_result_count")
     if isinstance(news_result_count, int):
         if news_result_count > 0:
+            if input_message:
+                return _component(
+                    "news",
+                    label,
+                    "degraded",
+                    f"新闻检索返回 {news_result_count} 条结果，但新闻{input_message}；报告页相关资讯可能来自后续检索或历史持久化",
+                    {
+                        "record_count": news_result_count,
+                        "analysis_input_block": "news",
+                        "analysis_input_status": input_block.get("status"),
+                        "analysis_input_missing_reasons": _list_text(
+                            input_block.get("missing_reasons")
+                        ),
+                        "evidence_scope": "retrieval_vs_analysis_input",
+                    },
+                )
             return _component(
                 "news",
                 label,
