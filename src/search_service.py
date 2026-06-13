@@ -2203,10 +2203,10 @@ class SearchService:
         re.IGNORECASE,
     )
     _BUSINESS_APP_METRIC_RE = re.compile(
-        r"(?:(?:下载量|安装量|装机量).{0,12}"
+        r"(?:(?:下载量|安装量|装机量|应用下载|应用安装|app下载|app安装).{0,12}"
         r"(?:增长|同比|环比|上升|增加|提升|突破|达到|达|超过|超|累计|接近|保持|创新高|下降|下滑|减少|回落|放缓|持平|承压|低迷)|"
         r"(?:增长|同比|环比|上升|增加|提升|突破|达到|达|超过|超|累计|接近|保持|创新高|下降|下滑|减少|回落|放缓|持平|承压|低迷)"
-        r".{0,12}(?:下载量|安装量|装机量)|"
+        r".{0,12}(?:下载量|安装量|装机量|应用下载|应用安装|app下载|app安装)|"
         r"\b(?:downloads?|installs?)\b.{0,16}"
         r"\b(?:grew|growth|rose|increase|increased|surged|fell|fall|declined|decline|"
         r"decreased|dropped|drop|slowed|flat|weakened)\b|"
@@ -2896,6 +2896,13 @@ class SearchService:
             combined_text,
             ("小姐", "按摩", "足浴", "桑拿", "会所", "技师"),
         )
+        has_adult_specific_anchor = cls._contains_any_news_term(
+            combined_text,
+            (
+                "小姐", "约炮", "援交", "楼凤", "外围", "包夜",
+                "大保健", "莞式", "推油", "成人", "色情",
+            ),
+        )
         has_ambiguous_adult_phrase = cls._contains_any_news_term(
             combined_text,
             cls._ADULT_SERVICE_SPAM_AMBIGUOUS_TERMS,
@@ -2903,7 +2910,7 @@ class SearchService:
         if has_ambiguous_adult_phrase:
             return has_service_anchor
 
-        return has_service_anchor and context_hits >= 3
+        return has_adult_specific_anchor and has_service_anchor and context_hits >= 3
 
     @classmethod
     def _score_news_relevance(

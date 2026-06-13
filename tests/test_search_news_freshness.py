@@ -769,6 +769,33 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
         )
         self.assertEqual(resp.results[0].relevance_category, "direct_company_news")
 
+    def test_app_download_and_install_metric_phrases_do_not_trigger_download_filter(self) -> None:
+        """Application download/install metric phrases should remain business news."""
+        fresh = datetime.now().date().isoformat()
+        service, _ = self._create_service_with_mock_provider(
+            news_max_age_days=3,
+            news_strategy_profile="short",
+            response=_response(
+                [
+                    _result(
+                        "拼多多 PDD Temu 应用下载同比增长",
+                        fresh,
+                        snippet="Temu 应用安装同比提升，推动跨境业务增长。",
+                        url="https://finance.example.invalid/app/news/pdd-temu-install-growth",
+                        source="finance.example.invalid",
+                    )
+                ]
+            ),
+        )
+
+        resp = service.search_stock_news("PDD", "PDD Holdings", max_results=1)
+
+        self.assertEqual(
+            [item.title for item in resp.results],
+            ["拼多多 PDD Temu 应用下载同比增长"],
+        )
+        self.assertEqual(resp.results[0].relevance_category, "direct_company_news")
+
     def test_app_download_decline_metrics_do_not_trigger_download_filter(self) -> None:
         """Negative app download/install metrics are also business news."""
         fresh = datetime.now().date().isoformat()
@@ -941,6 +968,33 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
         self.assertEqual(
             [item.title for item in resp.results],
             ["华能国际 600011 推出全套服务解决方案"],
+        )
+        self.assertEqual(resp.results[0].relevance_category, "direct_company_news")
+
+    def test_local_service_category_cluster_does_not_trigger_adult_spam_filter(self) -> None:
+        """Benign local-service categories need adult-specific anchors before filtering."""
+        fresh = datetime.now().date().isoformat()
+        service, _ = self._create_service_with_mock_provider(
+            news_max_age_days=3,
+            news_strategy_profile="short",
+            response=_response(
+                [
+                    _result(
+                        "美团 03690 推出按摩足浴会所预约套餐服务",
+                        fresh,
+                        snippet="美团拓展本地生活服务，新增按摩足浴会所预约套餐。",
+                        url="https://finance.example.invalid/news/03690-local-service",
+                        source="finance.example.invalid",
+                    )
+                ]
+            ),
+        )
+
+        resp = service.search_stock_news("03690.HK", "美团", max_results=1)
+
+        self.assertEqual(
+            [item.title for item in resp.results],
+            ["美团 03690 推出按摩足浴会所预约套餐服务"],
         )
         self.assertEqual(resp.results[0].relevance_category, "direct_company_news")
 
