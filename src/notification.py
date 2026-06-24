@@ -1904,7 +1904,7 @@ class NotificationService(
         return text if text else "N/A"
 
     def _get_fundamental_blocks(self, result: AnalysisResult) -> Dict[str, Any]:
-        """Extract financial_report / dividend / belong_boards / sector_rankings.
+        """Extract financial_report / dividend / belong_boards / board rankings.
 
         Falls back to empty containers when fundamental_context is missing or partial,
         so callers can rely on dict shape without re-checking types.
@@ -1918,6 +1918,8 @@ class NotificationService(
                 "belong_boards": [],
                 "sector_top": [],
                 "sector_bottom": [],
+                "concept_top": [],
+                "concept_bottom": [],
             }
 
         earnings_block = ctx.get("earnings") if isinstance(ctx.get("earnings"), dict) else {}
@@ -1932,6 +1934,16 @@ class NotificationService(
         boards_data = boards_block.get("data") if isinstance(boards_block.get("data"), dict) else {}
         sector_top = boards_data.get("top") if isinstance(boards_data.get("top"), list) else []
         sector_bottom = boards_data.get("bottom") if isinstance(boards_data.get("bottom"), list) else []
+        concept_block = ctx.get("concept_boards") if isinstance(ctx.get("concept_boards"), dict) else {}
+        if not concept_block and isinstance(ctx.get("concepts"), dict):
+            concept_block = ctx.get("concepts")
+        if not concept_block and isinstance(ctx.get("concept_rankings"), dict):
+            concept_block = ctx.get("concept_rankings")
+        concept_data = concept_block.get("data") if isinstance(concept_block.get("data"), dict) else concept_block
+        if not isinstance(concept_data, dict):
+            concept_data = {}
+        concept_top = concept_data.get("top") if isinstance(concept_data.get("top"), list) else []
+        concept_bottom = concept_data.get("bottom") if isinstance(concept_data.get("bottom"), list) else []
 
         belong_boards = ctx.get("belong_boards") if isinstance(ctx.get("belong_boards"), list) else []
 
@@ -1942,6 +1954,8 @@ class NotificationService(
             "belong_boards": belong_boards,
             "sector_top": sector_top,
             "sector_bottom": sector_bottom,
+            "concept_top": concept_top,
+            "concept_bottom": concept_bottom,
         }
 
     def _append_fundamental_blocks(self, lines: List[str], result: AnalysisResult) -> None:
@@ -2055,22 +2069,39 @@ class NotificationService(
             return
 
         sector_signals: Dict[str, Tuple[str, Optional[float]]] = {}
-        for item in blocks.get("sector_top") or []:
-            if not isinstance(item, dict):
-                continue
-            name = str(item.get("name") or "").strip()
-            if not name:
-                continue
-            sector_signals[name] = (labels["leading_board_label"], _safe_float(item.get("change_pct")))
-        for item in blocks.get("sector_bottom") or []:
-            if not isinstance(item, dict):
-                continue
-            name = str(item.get("name") or "").strip()
-            if not name or name in sector_signals:
-                continue
-            sector_signals[name] = (labels["lagging_board_label"], _safe_float(item.get("change_pct")))
+        concept_signals: Dict[str, Tuple[str, Optional[float]]] = {}
 
-        # Pre-resolve rows so we know whether sector-signal columns carry any
+        def add_signals(target: Dict[str, Tuple[str, Optional[float]]], rows: Any, label: str) -> None:
+            for item in rows or []:
+                if not isinstance(item, dict):
+                    continue
+                name = str(item.get("name") or "").strip()
+                if not name or name in target:
+                    continue
+                target[name] = (label, _safe_float(item.get("change_pct")))
+
+        add_signals(sector_signals, blocks.get("sector_top"), labels["leading_board_label"])
+        add_signals(sector_signals, blocks.get("sector_bottom"), labels["lagging_board_label"])
+        add_signals(concept_signals, blocks.get("concept_top"), labels["leading_board_label"])
+        add_signals(concept_signals, blocks.get("concept_bottom"), labels["lagging_board_label"])
+
+        def resolve_signal(name: str, board_type: str) -> Tuple[Optional[str], Optional[float]]:
+            normalized_type = board_type.strip().lower()
+            is_industry = normalized_type in {"行业", "industry", "sector"}
+            is_concept = normalized_type in {"概念", "concept", "theme"}
+            if is_industry:
+                return sector_signals.get(name, (None, None))
+            if is_concept:
+                return concept_signals.get(name, (None, None))
+            sector_signal = sector_signals.get(name)
+            concept_signal = concept_signals.get(name)
+            if sector_signal and not concept_signal:
+                return sector_signal
+            if concept_signal and not sector_signal:
+                return concept_signal
+            return None, None
+
+        # Pre-resolve rows so we know whether board-signal columns carry any
         # data — drop them entirely when every cell would be "--" (typical for
         # HK/US where there's no 板块涨跌榜 feed) so the table stays compact.
         prepared: List[Tuple[str, str, Optional[str], Optional[float]]] = []
@@ -2081,7 +2112,7 @@ class NotificationService(
             if not name:
                 continue
             board_type = self._format_text(raw.get("type"))
-            status_text, change_pct = sector_signals.get(name, (None, None))
+            status_text, change_pct = resolve_signal(name, board_type)
             prepared.append((name, board_type, status_text, change_pct))
 
         if not prepared:

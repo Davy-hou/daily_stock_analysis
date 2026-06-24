@@ -1069,6 +1069,10 @@ class StockAnalysisPipeline:
         existing_boards = enriched_context.get("belong_boards")
         if isinstance(existing_boards, list):
             enriched_context["belong_boards"] = list(existing_boards)
+            market = enriched_context.get("market")
+            if not isinstance(market, str) or not market.strip():
+                market = get_market_for_stock(normalize_stock_code(code))
+            self._attach_concept_rankings_to_fundamental_context(code, enriched_context, market)
             return enriched_context
 
         boards_block = enriched_context.get("boards")
@@ -1100,7 +1104,42 @@ class StockAnalysisPipeline:
             logger.debug("%s attach belong_boards failed (fail-open): %s", code, e)
 
         enriched_context["belong_boards"] = boards
+        self._attach_concept_rankings_to_fundamental_context(code, enriched_context, market)
         return enriched_context
+
+    def _attach_concept_rankings_to_fundamental_context(
+        self,
+        code: str,
+        enriched_context: Dict[str, Any],
+        market: str,
+    ) -> None:
+        """Attach concept/theme rankings for A-share related-board signals."""
+        if market != "cn" or isinstance(enriched_context.get("concept_boards"), dict):
+            return
+
+        top_concepts: List[Dict[str, Any]] = []
+        bottom_concepts: List[Dict[str, Any]] = []
+        try:
+            fetch_rankings = getattr(self.fetcher_manager, "get_concept_rankings", None)
+            if callable(fetch_rankings):
+                rankings = fetch_rankings(5)
+                if isinstance(rankings, tuple) and len(rankings) == 2:
+                    raw_top, raw_bottom = rankings
+                    if isinstance(raw_top, list):
+                        top_concepts = raw_top
+                    if isinstance(raw_bottom, list):
+                        bottom_concepts = raw_bottom
+        except Exception as e:
+            logger.debug("%s attach concept_rankings failed (fail-open): %s", code, e)
+
+        if top_concepts or bottom_concepts:
+            enriched_context["concept_boards"] = {
+                "status": "ok" if top_concepts and bottom_concepts else "partial",
+                "data": {
+                    "top": top_concepts,
+                    "bottom": bottom_concepts,
+                },
+            }
 
     def _ensure_agent_history(self, code: str, min_days: int = 240) -> None:
         """Ensure at least *min_days* of K-line history is in DB for agent tools."""

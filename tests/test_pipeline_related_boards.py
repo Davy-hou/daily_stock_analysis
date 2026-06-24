@@ -4,7 +4,9 @@
 import unittest
 from unittest.mock import MagicMock
 
+from api.v1.schemas.history import ReportDetails
 from src.core.pipeline import StockAnalysisPipeline
+from src.utils.data_processing import extract_board_detail_fields
 
 
 class PipelineRelatedBoardsTestCase(unittest.TestCase):
@@ -25,6 +27,49 @@ class PipelineRelatedBoardsTestCase(unittest.TestCase):
         self.assertIsNot(enriched, cached_context)
         self.assertNotIn("belong_boards", cached_context)
         self.assertEqual(enriched["belong_boards"], [{"name": "白酒", "type": "行业"}])
+
+    def test_attach_belong_boards_adds_concept_rankings_for_cn(self) -> None:
+        pipeline = StockAnalysisPipeline.__new__(StockAnalysisPipeline)
+        pipeline.fetcher_manager = MagicMock()
+        pipeline.fetcher_manager.get_belong_boards.return_value = [{"name": "机器人概念", "type": "概念"}]
+        pipeline.fetcher_manager.get_concept_rankings.return_value = (
+            [{"name": "机器人概念", "change_pct": 4.2}],
+            [{"name": "转基因", "change_pct": -2.05}],
+        )
+
+        context = {
+            "market": "cn",
+            "status": "ok",
+            "coverage": {"boards": "ok"},
+            "boards": {"status": "ok", "data": {"top": [], "bottom": []}},
+        }
+
+        enriched = pipeline._attach_belong_boards_to_fundamental_context("600519", context)
+
+        self.assertEqual(enriched["concept_boards"]["data"]["top"][0]["name"], "机器人概念")
+        self.assertEqual(enriched["concept_boards"]["data"]["bottom"][0]["change_pct"], -2.05)
+
+    def test_extract_board_details_exposes_concept_rankings(self) -> None:
+        snapshot = {
+            "fundamental_context": {
+                "belong_boards": [{"name": "机器人概念", "type": "概念"}],
+                "concept_boards": {
+                    "status": "ok",
+                    "data": {
+                        "top": [{"name": "机器人概念", "change_pct": "4.2%", "source": "akshare"}],
+                        "bottom": [],
+                    },
+                },
+            },
+        }
+
+        extracted = extract_board_detail_fields(snapshot)
+        details = ReportDetails(context_snapshot=snapshot)
+
+        self.assertEqual(extracted["concept_rankings"]["top"][0]["name"], "机器人概念")
+        self.assertEqual(extracted["concept_rankings"]["top"][0]["change_pct"], 4.2)
+        self.assertEqual(extracted["concept_rankings"]["top"][0]["source"], "akshare")
+        self.assertEqual(details.concept_rankings["top"][0]["name"], "机器人概念")
 
     def test_attach_belong_boards_copies_existing_board_list(self) -> None:
         pipeline = StockAnalysisPipeline.__new__(StockAnalysisPipeline)

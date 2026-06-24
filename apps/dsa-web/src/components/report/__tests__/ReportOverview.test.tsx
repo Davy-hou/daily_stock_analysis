@@ -128,7 +128,11 @@ describe('ReportOverview', () => {
           ],
           sectorRankings: {
             top: [{ name: '白酒', changePct: 2.31 }],
-            bottom: [{ name: '消费', changePct: -1.2 }],
+            bottom: [{ name: '新能源', changePct: -1.2 }],
+          },
+          conceptRankings: {
+            top: [{ name: '消费', changePct: 4.56 }],
+            bottom: [],
           },
         }}
       />,
@@ -137,11 +141,38 @@ describe('ReportOverview', () => {
     expect(screen.getByText('关联板块')).toBeInTheDocument();
     expect(screen.getByText('白酒')).toBeInTheDocument();
     expect(screen.getByText('行业')).toBeInTheDocument();
-    expect(screen.getByText('领涨')).toBeInTheDocument();
+    expect(screen.getAllByText('领涨')).toHaveLength(2);
     expect(screen.getByText('+2.31%')).toBeInTheDocument();
+    expect(screen.getByText('+4.56%')).toBeInTheDocument();
     expect(screen.getByText('领跌')).toBeInTheDocument();
     expect(screen.getByText('-1.20%')).toBeInTheDocument();
     expect(screen.queryByText('中性')).not.toBeInTheDocument();
+  });
+
+  it('does not apply industry ranking to a concept board with the same name', () => {
+    render(
+      <ReportOverview
+        meta={baseMeta}
+        summary={baseSummary}
+        details={{
+          belongBoards: [{ name: '白酒', type: '概念' }],
+          sectorRankings: {
+            top: [{ name: '白酒', changePct: 2.31 }],
+            bottom: [],
+          },
+          conceptRankings: {
+            top: [],
+            bottom: [{ name: '白酒', changePct: -3.2 }],
+          },
+        }}
+      />,
+    );
+
+    expect(screen.getByText('白酒')).toBeInTheDocument();
+    expect(screen.getByText('概念')).toBeInTheDocument();
+    expect(screen.getByText('领跌')).toBeInTheDocument();
+    expect(screen.getByText('-3.20%')).toBeInTheDocument();
+    expect(screen.queryByText('+2.31%')).not.toBeInTheDocument();
   });
 
   it('places related boards below action advice and renders more than three on one row', () => {
