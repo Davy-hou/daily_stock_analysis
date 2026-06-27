@@ -67,6 +67,8 @@ python -m pytest -m "not network"
 
 - 【必填】当前 Head CI：`ai-governance:pass / backend-gate:pass / docker-build:pass / web-gate:pass`（按实际结果替换）并附对应链接。  
   如需保留历史失败措辞，必须在同段写明“本地环境差异 + 当前 CI 已通过 + 当前 Head 结果链接”；否则不得出现“仍失败/失败”字样。
+  - 当前 PR 建议示例（CI 全部通过时）：`当前 Head CI：ai-governance:pass / backend-gate:pass / docker-build:pass / web-gate:pass`
+  - `当前状态：全部通过（pass）`
 
 - 若全部通过，请额外补充一句：`当前状态：全部通过（pass）`，并明确 Head CI 对应全部 `pass`。
 
@@ -81,9 +83,9 @@ python -m pytest -m "not network"
 
 > 如截图无法获取，请在“原因”中明确写明替代证据（如 Playwright/e2e 产物路径、审查链接）及其可追溯命令，不得留空。涉及 Web 设置字段变更时，需确保截图或替代证据明确指向设置页变更项。
 >
-> 若本 PR 修改 Web UI，建议至少补一条可复现路径，例如：
+> 若本 PR 修改 Web UI，建议至少补一条可复现路径，例如（优先 settings page）：
 >
-> - Playwright 截图产物：`apps/dsa-web/e2e/smoke.spec.ts`（`npx playwright test apps/dsa-web/e2e/smoke.spec.ts --grep "backtest page renders filter controls after login"`）
+> - Playwright 截图产物：`apps/dsa-web/e2e/smoke.spec.ts`（`cd apps/dsa-web && npx playwright test e2e/smoke.spec.ts --grep "settings page renders title and save actions after login"`）
 > - 审查证据链接：可直接使用 Actions 产物、GitHub 评论附件或外部可访问链接。
 
 > 替代证据模板（设置页变更建议）：
@@ -92,6 +94,7 @@ python -m pytest -m "not network"
 > - 说明：截图中应可见 `MARKET_REVIEW_REGION` 的选项文案（A 股/港股/美股/日股/韩股/全部市场）
 
 - 截图链接 / Screenshot links（Web UI/报告改动项必填）：
+- settings 页建议命名：`smoke-settings-page-zh` / `smoke-settings-page-en`
 - 前后对比 / Before & After（如有）：
 - 不适用原因 / Reason if not applicable（若未附截图，此项务必填写，且包含可复现证据与命令）：
   - Playwright 命令（无截图时）：`cd apps/dsa-web && npx playwright test e2e/smoke.spec.ts --grep "settings page"`
