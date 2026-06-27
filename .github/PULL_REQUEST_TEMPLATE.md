@@ -58,6 +58,7 @@ python -m pytest -m "not network"
 
 > `Full-suite note` 必须与当次 PR 的当前 Head CI 结果保持一致；若本地复现存在环境相关失败，请明确标注“本地环境差异”并给出 GitHub CI 的结论与链接。  
 > 请避免保留与本 PR 无关的历史失败措辞，按本次实际结果填报。
+> 如历史描述中仍保留 `./scripts/ci_gate.sh` 失败记录，请先改为当前 Head CI 状态或说明与 Head CI 的差异来源。
 > 若 `Full-suite note` 与当前 Head CI 不一致，PR 文本不完整，请先更新 PR 描述后再提交。
 
 - 请在下面按实际结果填写并与 `Full-suite note` 保持一致（任一未填视为信息缺失）：
@@ -97,6 +98,7 @@ python -m pytest -m "not network"
 - 截图链接 / Screenshot links（Web UI/报告改动项必填，未提供请在下方“不适用原因”给出替代证据）：
 - settings 页建议命名：`smoke-settings-page-zh` / `smoke-settings-page-en`
 - 前后对比 / Before & After（如有）：
+- settings 字段变更说明：截图或产物应明确包含 `MARKET_REVIEW_REGION` 字段与帮助文案区块（中文/英文）。
 - 不适用原因 / Reason if not applicable（若未附截图，此项务必填写，且包含可复现证据与命令）：
   - Playwright 命令（无截图时）：`cd apps/dsa-web && npx playwright test e2e/smoke.spec.ts --grep "settings page"`
   - 产物路径（无截图时）：`apps/dsa-web/test-results/**/smoke-settings-page-*.png`
@@ -114,6 +116,8 @@ python -m pytest -m "not network"
 - 若本 PR 修改第三方模型 / API 的兼容语义、请求参数、路由前缀或 provider fallback，请提供**官方来源链接或公告**，并说明这是长期约束、当前运行时约束还是临时兼容处理。  
   请在下方补充所影响外部 API/服务、回归范围与回退方式。  
   *(EN) If this PR changes third-party model/API compatibility, request parameters, routing prefixes, or provider fallback behavior, include an **official source link or announcement** and clarify whether the rule is permanent, runtime-specific, or a temporary compatibility workaround.)*
+- 若本 PR 未触及第三方模型/API、provider/model/base URL 或运行时配置保存/清理/迁移逻辑，请在此段直接按以下文案确认（无须再次展开）：  
+  `本 PR 未变更 provider/model/base URL、运行时配置清理迁移语义；历史配置保持不变；回滚方式为 revert 本提交。`
 - 若本 PR 修改 `.github/PULL_REQUEST_TEMPLATE.md` / PR 流程模板类文件，请在此明确：仅影响协作流程与模板维护，不改 runtime 行为；回退方式为 revert；并补充是否影响自动化提交流程。  
   *(EN) If this PR changes `.github/PULL_REQUEST_TEMPLATE.md` or other PR workflow files, state that it only affects contribution governance templates (no runtime behavior), provide rollback by revert, and note any CI/checklist impact.)*
 - 若本 PR 依赖特定运行时 / 锁定依赖窗口（例如 LiteLLM 版本范围、OpenAI-compatible 路由、YAML alias 行为），请写明当前验证过的兼容范围与覆盖路径。  
