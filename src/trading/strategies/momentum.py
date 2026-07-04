@@ -23,14 +23,16 @@ class MomentumStrategy(Strategy):
         self._in_position = False
 
     def on_bar(self, bar: Bar, state: dict) -> Optional[Signal]:
-        self._highs.append(bar.high)
-        self._lows.append(bar.low)
-
-        if len(self._highs) < self._params["lookback"]:
+        if len(self._highs) >= self._params["lookback"]:
+            highest = max(self._highs)
+            lowest = min(self._lows)
+        else:
+            self._highs.append(bar.high)
+            self._lows.append(bar.low)
             return None
 
-        highest = max(self._highs)
-        lowest = min(self._lows)
+        self._highs.append(bar.high)
+        self._lows.append(bar.low)
         threshold = self._params.get("threshold_pct", 0.1) / 100.0
         code = self._params.get("code", "UNKNOWN")
 
