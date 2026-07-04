@@ -50,7 +50,7 @@ class Order:
     price: float
     volume: int
     status: OrderStatus = OrderStatus.PENDING
-    type: OrderType = OrderType.MARKET
+    order_type: OrderType = OrderType.MARKET
     filled_time: Optional[datetime] = None
     filled_price: Optional[float] = None
 
