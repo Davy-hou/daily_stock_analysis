@@ -1,4 +1,6 @@
 from __future__ import annotations
+
+import math
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
@@ -30,7 +32,7 @@ class Bar:
     high: float
     low: float
     close: float
-    volume: float
+    volume: int
 
 
 @dataclass
@@ -81,6 +83,7 @@ class Trade:
 @dataclass
 class Metrics:
     trades: list[Trade]
+    periods_per_day: float = 240
 
     @property
     def total_trades(self) -> int:
@@ -92,7 +95,7 @@ class Metrics:
 
     @property
     def loss_trades(self) -> int:
-        return sum(1 for t in self.trades if t.profit <= 0)
+        return sum(1 for t in self.trades if t.profit < 0)
 
     @property
     def win_rate(self) -> Optional[float]:
@@ -109,7 +112,7 @@ class Metrics:
         gross_profit = sum(t.profit for t in self.trades if t.profit > 0)
         gross_loss = abs(sum(t.profit for t in self.trades if t.profit < 0))
         if gross_loss == 0:
-            return float("inf") if gross_profit > 0 else None
+            return None
         return gross_profit / gross_loss
 
     @property
@@ -119,7 +122,7 @@ class Metrics:
         returns = [(t.sell_price - t.buy_price) / t.buy_price for t in self.trades]
         if len(returns) < 2 or np.std(returns) == 0:
             return None
-        return float(np.mean(returns) / np.std(returns) * np.sqrt(240))
+        return float(np.mean(returns) / np.std(returns) * math.sqrt(self.periods_per_day))
 
     @property
     def max_drawdown_pct(self) -> Optional[float]:
@@ -130,7 +133,9 @@ class Metrics:
         max_dd = 0.0
         for t in self.trades:
             cumulative += t.profit
-            peak = max(peak, cumulative)
-            dd = (peak - cumulative) / peak if peak > 0 else 0
-            max_dd = max(max_dd, dd)
+            if cumulative > peak:
+                peak = cumulative
+            if peak > 0:
+                dd = (peak - cumulative) / peak
+                max_dd = max(max_dd, dd)
         return max_dd * 100
