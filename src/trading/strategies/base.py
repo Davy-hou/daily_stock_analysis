@@ -16,13 +16,13 @@ class Strategy(ABC):
 
     @property
     def params(self) -> dict[str, Any]:
-        return self._params
+        return dict(self._params)
 
     @abstractmethod
-    def on_bar(self, bar: Bar, state: dict) -> Optional[Signal]:
+    def on_bar(self, bar: Bar, state: dict[str, Any]) -> Optional[Signal]:
         ...
 
-    def on_tick(self, tick) -> Optional[Signal]:
+    def on_tick(self, tick: Any) -> Optional[Signal]:
         return None
 
     def reset(self) -> None:
