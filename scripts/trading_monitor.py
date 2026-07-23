@@ -14,11 +14,11 @@ from data_provider.intraday import MinuteDataLoader
 STOCKS = [
     {"code": "589020", "name": "科创半导体", "rsi_p": 8, "os": 35, "ob": 85,
      "idx": "000688", "idx_name": "科创50", "ma": 5},
-    {"code": "159500", "name": "创业板ETF", "rsi_p": 8, "os": 35, "ob": 85,
+    {"code": "159500", "name": "创业板ETF", "rsi_p": 18, "os": 30, "ob": 55,
      "idx": "399006", "idx_name": "创业板指", "ma": 5},
-    {"code": "515880", "name": "通信ETF",   "rsi_p": 8, "os": 35, "ob": 85,
+    {"code": "515880", "name": "通信ETF",   "rsi_p": 10, "os": 35, "ob": 85,
      "idx": "000001", "idx_name": "上证指数", "ma": 5},
-    {"code": "588220", "name": "科创ETF",   "rsi_p": 8, "os": 35, "ob": 85,
+    {"code": "588220", "name": "科创ETF",   "rsi_p": 20, "os": 30, "ob": 55,
      "idx": "000688", "idx_name": "科创50", "ma": 5},
 ]
 
