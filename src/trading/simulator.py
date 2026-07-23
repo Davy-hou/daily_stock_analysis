@@ -75,10 +75,12 @@ class Simulator:
             signal = self.strategy.on_bar(bar, state)
 
             if signal is not None:
+                signal.code = code
                 if signal.side == Side.BUY and position is None:
-                    approx_volume = int(cash * 0.95 / signal.price / 100) * 100
+                    max_vol_by_cash = int(cash * 0.95 / signal.price / 100) * 100
+                    max_vol_by_risk = int(self.risk_manager.config.max_position_value / signal.price / 100) * 100
+                    approx_volume = min(max_vol_by_cash, max_vol_by_risk)
                     if approx_volume >= 100:
-                        order_value = signal.price * approx_volume
                         risk_check = self.risk_manager.check_order(
                             price=signal.price, volume=approx_volume,
                             side=Side.BUY, current_position=position, daily_pnl=daily_pnl,

@@ -87,3 +87,6 @@ static/
 /apps/dsa-desktop/dist/
 /apps/dsa-desktop/node_modules/
 docs/specs/
+
+# 盘中监控状态文件（GH Actions cache 持久化）
+.monitor_state.json
