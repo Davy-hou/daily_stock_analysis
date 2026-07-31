@@ -1,93 +1,62 @@
 """A 股市场情绪分析服务
 
-数据源: 东方财富个股新闻 (akshare)
-情绪评分: 基于金融关键词词典的正负面打分
+两大部分:
+1. 量化市场情绪指标: 涨停/跌停家数、涨跌家数比、成交额热度
+2. 大V情绪跟踪: 网页搜索跟踪指定大V的近期言论并打分
+
+输出: 市场温度 (0~100), 情绪标签 (hot/cold/neutral), 大V群体观点
 
 用法:
     svc = ChinaSentimentService()
-    result = svc.analyze("589020")           # 单只
-    results = svc.analyze_batch([...])        # 批量
-    svc.send_feishu(webhook_url, results)     # 推飞书
+    result = svc.analyze_market()          # 市场整体情绪
+    kol_result = svc.analyze_kols()        # 大V情绪
+    combined = svc.analyze_all()           # 综合
 """
 
 from __future__ import annotations
 
+import html
 import logging
 import math
+import re
+import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta, timezone
-from typing import Any, Optional
+from typing import Any
 
 import requests
 
 logger = logging.getLogger(__name__)
 
 # ── 中文金融情绪词典 ──────────────────────────────────────────
-# 用于关键词匹配打分（无需外部 NLP 依赖）
+
 BULLISH_KEYWORDS = [
     "大涨", "涨停", "创新高", "突破", "利好", "放量", "拉升", "反弹",
     "反攻", "看好", "抄底", "加仓", "买入", "增持", "做多", "看涨",
     "超预期", "扭亏", "拐点", "催化", "风口", "主线", "龙头", "强势",
-    "回暖", "复苏", "触底", "爆发", "领涨", "领跑", "大单", "主力",
-    "北向资金", "净流入", "政策支持", "扶持", "减税", "降准", "降息",
-    "宽松", "注入", "重组", "并购", "订单", "中标", "合同",
-    "业绩预增", "利润增长", "营收增长", "分红", "回购",
+    "回暖", "复苏", "触底", "爆发", "领涨", "大单", "主力",
+    "北向资金", "净流入", "降准", "降息", "宽松", "重组", "并购",
+    "业绩预增", "利润增长", "分红", "回购", "牛市", "上车",
 ]
 
 BEARISH_KEYWORDS = [
     "大跌", "跌停", "新低", "破位", "利空", "缩量", "跳水", "下探",
     "撤退", "看空", "减仓", "卖出", "减持", "做空", "看跌", "清仓",
-    "不及预期", "暴雷", "亏损", "退市", "崩盘", "踩踏",
+    "不及预期", "暴雷", "亏损", "退市", "崩盘", "踩踏", "割肉",
     "恐慌", "回调", "出货", "砸盘", "主力流出", "北向资金净流出",
     "加息", "紧缩", "监管", "立案", "处罚", "调查", "风险提示",
     "业绩预减", "利润下滑", "营收下降", "债务", "违约", "裁员",
-    "贸易战", "制裁", "封杀", "停牌", "质押平仓",
+    "贸易战", "制裁", "封杀", "停牌", "质押平仓", "熊市", "销户",
+    "认输", "割肉离场", "别玩了", "垃圾", "亏麻", "哭",
 ]
 
-INTENSIFIERS = {
-    "大幅": 1.5, "明显": 1.3, "严重": 1.5, "持续": 1.2,
-    "加速": 1.3, "全面": 1.2, "显著": 1.3, "急剧": 1.5,
-}
-
-STOCK_NAMES = {
-    "589020": "科创半导体",
-    "159500": "创业板ETF",
-    "515880": "通信ETF",
-    "588220": "科创ETF",
-}
-
-
-# ── 数据获取 ──────────────────────────────────────────────────
-
-
-def _fetch_eastmoney_news(code: str, max_items: int = 30) -> list[dict]:
-    """东方财富个股新闻 (akshare)"""
-    try:
-        import akshare as ak
-        df = ak.stock_news_em(symbol=code)
-        if df is None or df.empty:
-            return []
-        if "新闻标题" not in df.columns:
-            return []
-        items = []
-        for _, row in df.head(max_items).iterrows():
-            items.append({
-                "title": str(row.get("新闻标题", "")),
-                "content": str(row.get("新闻内容", "")),
-                "time": str(row.get("发布时间", "")),
-                "source": str(row.get("文章来源", "东方财富")),
-            })
-        return items
-    except Exception as e:
-        logger.debug("akshare news failed for %s: %s", code, e)
-    return []
-
-
-# ── 情绪评分 ──────────────────────────────────────────────────
+# 极端情绪词（用于冰点/热点判断）
+EXTREME_BEARISH = ["清仓", "销户", "割肉", "认输", "亏麻", "崩盘", "退市", "别玩了"]
+EXTREME_BULLISH = ["牛市", "满仓", "梭哈", "涨停潮", "踏空", "冲天", "主升浪"]
 
 
 def _score_text(text: str) -> float:
-    """对单段文本做正负面打分，返回 [-1, 1]"""
+    """正负面打分，返回 [-1, 1]"""
     if not text:
         return 0.0
     score = 0.0
@@ -95,22 +64,11 @@ def _score_text(text: str) -> float:
 
     for kw in BULLISH_KEYWORDS:
         if kw in text:
-            w = 1.0
-            for intensifier, factor in INTENSIFIERS.items():
-                if intensifier in text:
-                    w = factor
-                    break
-            score += w
+            score += 1.0
             matched += 1
-
     for kw in BEARISH_KEYWORDS:
         if kw in text:
-            w = 1.0
-            for intensifier, factor in INTENSIFIERS.items():
-                if intensifier in text:
-                    w = factor
-                    break
-            score -= w
+            score -= 1.0
             matched += 1
 
     if matched == 0:
@@ -126,182 +84,354 @@ def _classify(score: float) -> str:
     return "neutral"
 
 
-# ── 主服务 ────────────────────────────────────────────────────
+# ── 大V配置 ───────────────────────────────────────────────────
+
+DEFAULT_KOLS = [
+    {"name": "峰哥亡命天涯",
+     "search_terms": ["峰哥亡命天涯 清仓", "峰哥亡命天涯 A股", "峰哥亡命天涯 股市"]},
+    {"name": "小冰冰",
+     "search_terms": ["小冰冰 炒股", "小冰冰 A股", "小冰冰 股市 复盘"]},
+]
 
 
-class ChinaSentimentService:
-    """A 股市场情绪分析服务"""
+class KOLSentimentTracker:
+    """大V情绪跟踪 - 多源网页搜索近期言论并打分
 
-    def __init__(self):
-        self._fetchers = [_fetch_eastmoney_news]
+    搜索源: DuckDuckGo(优先) → 必应 → 360 → 搜狗
+    GH Actions(美国服务器) 上 DDG 稳定; 国内网络下自动切换。
+    """
 
-    def analyze(self, code: str, name: str = "") -> dict[str, Any]:
-        """分析单只 ETF 的情绪
+    def __init__(self, kols: list[dict] | None = None):
+        self.kols = kols or DEFAULT_KOLS
 
-        返回:
-        {
-            "code", "name",
-            "score": float (-1~1),
-            "sentiment": str (positive/neutral/negative),
-            "total_articles", "positive_articles", "negative_articles",
-            "bullish_keywords", "bearish_keywords",
-            "top_news": [{title, source, sentiment, score}],
-            "source": str,
-        }
-        """
-        name = name or STOCK_NAMES.get(code, code)
-        all_articles: list[dict] = []
+    def _ddg(self, query: str, max_results: int) -> list[dict]:
+        url = "https://lite.duckduckgo.com/lite/"
+        resp = requests.post(
+            url, data={"q": query, "kl": "cn-zh"},
+            headers={"User-Agent": "Mozilla/5.0"}, timeout=8,
+        )
+        if resp.status_code != 200:
+            return []
+        links = re.findall(
+            r'<a[^>]*class="result-link"[^>]*href="([^"]+)"[^>]*>(.*?)</a>',
+            resp.text, re.DOTALL,
+        )
+        if not links:
+            links = re.findall(
+                r'<a[^>]*href="(https?://[^"]+)"[^>]*>(.*?)</a>',
+                resp.text, re.DOTALL,
+            )
+        out = []
+        for url, title in links[:max_results]:
+            clean = html.unescape(re.sub(r"<[^>]+>", "", title)).strip()
+            if clean:
+                out.append({"title": clean, "url": url})
+        return out
 
-        for fetcher in self._fetchers:
+    def _bing(self, query: str, max_results: int) -> list[dict]:
+        resp = requests.get(
+            "https://cn.bing.com/search", params={"q": query},
+            headers={"User-Agent": "Mozilla/5.0"}, timeout=8,
+        )
+        if resp.status_code != 200:
+            return []
+        blocks = re.findall(r'<li class="b_algo"[^>]*>(.*?)</li>', resp.text, re.DOTALL)
+        out = []
+        for b in blocks[:max_results]:
+            m = re.search(r'<h2>.*?<a[^>]*href="([^"]+)"[^>]*>(.*?)</a>', b, re.DOTALL)
+            if m:
+                title = html.unescape(re.sub(r"<[^>]+>", "", m.group(2))).strip()
+                if title:
+                    out.append({"title": title, "url": m.group(1)})
+        return out
+
+    def _sogou(self, query: str, max_results: int) -> list[dict]:
+        s = requests.Session()
+        s.headers.update({"User-Agent": "Mozilla/5.0"})
+        s.get("https://www.sogou.com/", timeout=8)
+        resp = s.get("https://www.sogou.com/web", params={"query": query}, timeout=8)
+        if resp.status_code != 200:
+            return []
+        links = re.findall(
+            r'<h3[^>]*>\s*<a[^>]*href="([^"]+)"[^>]*>(.*?)</a>', resp.text, re.DOTALL)
+        out = []
+        for url, title in links[:max_results]:
+            clean = html.unescape(re.sub(r"<[^>]+>", "", title)).strip()
+            if clean:
+                out.append({"title": clean, "url": url})
+        return out
+
+    def search(self, query: str, max_results: int = 5) -> list[dict]:
+        """多源搜索，返回首个成功源的结果"""
+        for name, fn in [
+            ("duckduckgo", self._ddg),
+            ("bing", self._bing),
+            ("sogou", self._sogou),
+        ]:
             try:
-                arts = fetcher(code)
-                if arts:
-                    all_articles.extend(arts)
+                results = fn(query, max_results)
+                if results:
+                    logger.debug("search %s via %s: %d 条", query, name, len(results))
+                    return results
             except Exception as e:
-                logger.debug("%s fetcher failed: %s", code, e)
+                logger.debug("search %s via %s failed: %s", query, name, e)
+        return []
 
-        if not all_articles:
-            return self._empty_result(code, name)
+    def analyze_kol(self, kol: dict) -> dict:
+        """分析单个大V情绪"""
+        name = kol["name"]
+        all_results: list[dict] = []
+        for term in kol.get("search_terms", [name]):
+            for r in self.search(term):
+                all_results.append(r)
 
-        scored: list[dict] = []
-        total = 0.0
-        pos = neg = 0
-        bullish_kw: set[str] = set()
-        bearish_kw: set[str] = set()
+        if not all_results:
+            return {
+                "name": name, "score": 0.0, "stance": "neutral",
+                "sources": 0, "snippets": [], "raw": [],
+            }
 
-        for art in all_articles:
-            text = f"{art.get('title', '')} {art.get('content', '')}"
-            s = _score_text(text)
-            sent = _classify(s)
-            art["score"] = s
-            art["sentiment"] = sent
-            scored.append(art)
-            total += s
-            if sent == "positive":
-                pos += 1
-            elif sent == "negative":
-                neg += 1
-            for kw in BULLISH_KEYWORDS:
-                if kw in text:
-                    bullish_kw.add(kw)
-            for kw in BEARISH_KEYWORDS:
-                if kw in text:
-                    bearish_kw.add(kw)
+        scores = []
+        snippets = []
+        for r in all_results:
+            title = r["title"]
+            s = _score_text(title)
+            scores.append(s)
+            snippets.append({"title": title, "url": r["url"], "score": round(s, 2)})
 
-        avg = total / max(len(scored), 1)
-
-        sorted_arts = sorted(scored, key=lambda x: abs(x.get("score", 0)), reverse=True)
-        top = [
-            {"title": a["title"], "source": a["source"],
-             "sentiment": a["sentiment"], "score": round(a["score"], 2)}
-            for a in sorted_arts[:5]
-        ]
+        avg = sum(scores) / len(scores)
+        stance = _classify(avg)
 
         return {
-            "code": code, "name": name,
-            "score": round(avg, 3), "sentiment": _classify(avg),
-            "total_articles": len(scored),
-            "positive_articles": pos, "negative_articles": neg,
-            "bullish_keywords": sorted(bullish_kw),
-            "bearish_keywords": sorted(bearish_kw),
-            "top_news": top,
-            "source": "东方财富",
+            "name": name,
+            "score": round(avg, 3),
+            "stance": stance,
+            "sources": len(snippets),
+            "snippets": sorted(snippets, key=lambda x: abs(x["score"]), reverse=True)[:5],
         }
 
-    @staticmethod
-    def _empty_result(code: str, name: str) -> dict:
-        return {
-            "code": code, "name": name,
-            "score": 0.0, "sentiment": "neutral",
-            "total_articles": 0, "positive_articles": 0, "negative_articles": 0,
-            "bullish_keywords": [], "bearish_keywords": [],
-            "top_news": [], "source": "",
-        }
-
-    def analyze_batch(self, stocks: list[tuple[str, str]],
-                      max_workers: int = 4) -> list[dict[str, Any]]:
-        """批量分析"""
-        results: list[dict] = []
+    def analyze_all(self, max_workers: int = 4) -> dict:
+        """分析全部大V"""
+        results = []
         with ThreadPoolExecutor(max_workers=max_workers) as pool:
-            fut = {pool.submit(self.analyze, c, n): (c, n) for c, n in stocks}
+            fut = {pool.submit(self.analyze_kol, kol): kol["name"] for kol in self.kols}
             for f in as_completed(fut):
                 try:
                     results.append(f.result())
                 except Exception as e:
-                    c, n = fut[f]
-                    logger.error("%s(%s): %s", n, c, e)
-                    results.append({"code": c, "name": n, "error": str(e)})
-        return results
+                    logger.error("KOL %s: %s", fut[f], e)
+                    results.append({"name": fut[f], "score": 0.0, "stance": "neutral",
+                                    "sources": 0, "snippets": []})
+
+        scores = [r["score"] for r in results if r.get("sources", 0) > 0]
+        avg = sum(scores) / len(scores) if scores else 0.0
+        return {"kols": results, "avg_score": round(avg, 3), "stance": _classify(avg)}
+
+
+# ── 市场量化指标 ──────────────────────────────────────────────
+
+
+class MarketSentimentAnalyzer:
+    """市场量化情绪指标"""
+
+    def __init__(self, date: str | None = None):
+        self.date = date or datetime.now(timezone(timedelta(hours=8))).strftime("%Y%m%d")
+
+    def _get_market_breadth(self) -> dict:
+        """涨停/跌停家数"""
+        try:
+            import akshare as ak
+            zt = ak.stock_zt_pool_em(date=self.date)
+            zt_count = len(zt) if zt is not None else 0
+        except Exception as e:
+            logger.debug("zt pool failed: %s", e)
+            zt_count = -1
+
+        try:
+            import akshare as ak
+            dt = ak.stock_zt_pool_dtgc_em(date=self.date)
+            dt_count = len(dt) if dt is not None else 0
+        except Exception as e:
+            logger.debug("dt pool failed: %s", e)
+            dt_count = -1
+
+        return {"zt_count": zt_count, "dt_count": dt_count}
+
+    def _get_market_volume_trend(self) -> dict:
+        """市场成交量 vs 20日均值 (新浪日线)"""
+        try:
+            import akshare as ak
+            df = ak.stock_zh_index_daily(symbol="sh000001")
+            if df is None or df.empty:
+                return {"amount": None, "ma20": None, "ratio": None}
+            df = df.sort_values("date").tail(25)
+            latest = df.iloc[-1]
+            ma20 = df["volume"].iloc[:-1].tail(20).mean()
+            if not ma20:
+                return {"amount": None, "ma20": None, "ratio": None}
+            return {
+                "amount": float(latest["volume"]),
+                "ma20": float(ma20),
+                "ratio": float(latest["volume"] / ma20),
+            }
+        except Exception as e:
+            logger.debug("volume trend failed: %s", e)
+            return {"amount": None, "ma20": None, "ratio": None}
+
+    def analyze(self) -> dict:
+        """计算市场情绪温度 (0~100)"""
+        breadth = self._get_market_breadth()
+        volume = self._get_market_volume_trend()
+
+        zt = breadth.get("zt_count", -1)
+        dt = breadth.get("dt_count", -1)
+        ratio = volume.get("ratio")
+
+        # 温度分项
+        temp_zt = 0.0
+        if zt >= 0:
+            # 涨停多 = 热
+            temp_zt = min(100, zt * 2.5)  # 40只涨停≈100分
+
+        temp_dt = 0.0
+        if dt >= 0:
+            # 跌停多 = 冷
+            temp_dt = min(100, dt * 10)  # 10只跌停≈100分(冷)
+
+        temp_vol = 50.0
+        if ratio:
+            # 成交额放大 = 热
+            temp_vol = min(100, max(0, 50 + (ratio - 1) * 100))
+
+        # 涨停贡献热，跌停贡献冷
+        temperature = 0.5 * temp_zt - 0.3 * temp_dt + 0.2 * temp_vol
+        temperature = max(0.0, min(100.0, temperature))
+
+        # 标签
+        if temperature >= 70:
+            label = "hot"       # 热点/狂热
+            label_cn = "🔥 热点（市场狂热）"
+        elif temperature <= 30:
+            label = "cold"      # 冰点/恐慌
+            label_cn = "🧊 冰点（市场恐慌）"
+        else:
+            label = "neutral"
+            label_cn = "⚪ 正常"
+
+        return {
+            "date": self.date,
+            "zt_count": zt,
+            "dt_count": dt,
+            "volume_ratio": round(ratio, 2) if ratio else None,
+            "temperature": round(temperature, 1),
+            "label": label,
+            "label_cn": label_cn,
+            "breadth": breadth,
+            "volume": volume,
+        }
+
+
+# ── 主服务 ────────────────────────────────────────────────────
+
+
+class ChinaSentimentService:
+    """A 股市场情绪综合分析"""
+
+    def __init__(self, kols: list[dict] | None = None):
+        self.kol_tracker = KOLSentimentTracker(kols)
+        self.market_analyzer = MarketSentimentAnalyzer()
+
+    def analyze_market(self) -> dict:
+        """市场量化情绪"""
+        return self.market_analyzer.analyze()
+
+    def analyze_kols(self) -> dict:
+        """大V情绪"""
+        return self.kol_tracker.analyze_all()
+
+    def analyze_all(self) -> dict:
+        """综合分析，输出冰点/热点判断"""
+        market = self.analyze_market()
+        kols = self.analyze_kols()
+
+        # 综合: 70% 量化 + 30% 大V
+        market_temp = market.get("temperature", 50)
+        kol_score = kols.get("avg_score", 0.0)  # -1~1
+        kol_temp = (kol_score + 1) / 2 * 100  # 映射到 0~100
+
+        combined = round(0.7 * market_temp + 0.3 * kol_temp, 1)
+
+        if combined >= 70:
+            label = "hot"
+            label_cn = "🔥 热点（市场狂热，注意风险）"
+        elif combined <= 30:
+            label = "cold"
+            label_cn = "🧊 冰点（市场恐慌，可能是机会）"
+        else:
+            label = "neutral"
+            label_cn = "⚪ 正常"
+
+        return {
+            "date": market.get("date"),
+            "market": market,
+            "kols": kols,
+            "combined_score": combined,
+            "label": label,
+            "label_cn": label_cn,
+        }
 
     def format_feishu(self, result: dict) -> tuple[str, str, str]:
-        """格式化单条情绪为飞书卡片"""
-        name = result.get("name", result.get("code", ""))
-        em = {"positive": "🟢", "negative": "🔴", "neutral": "⚪"}.get(
-            result.get("sentiment", "neutral"), "⚪")
-        title = f"{em} {name} 市场情绪"
-        lines = [
-            f"**{name} ({result['code']})**\n",
-            f"综合情绪: **{result['score']:.2f}** ({result['sentiment']})",
-            f"新闻覆盖: {result['total_articles']} 条 "
-            f"(🟢{result['positive_articles']}/🔴{result['negative_articles']})",
-        ]
-        bullish = result.get("bullish_keywords", [])
-        bearish = result.get("bearish_keywords", [])
-        if bullish:
-            lines.append(f"\n📈 积极信号: {' '.join(bullish[:5])}")
-        if bearish:
-            lines.append(f"📉 消极信号: {' '.join(bearish[:5])}")
-        top = result.get("top_news", [])
-        if top:
-            lines.append("\n📰 热点新闻:")
-            for n in top[:3]:
-                se = {"positive": "🟢", "negative": "🔴", "neutral": "⚪"}.get(
-                    n["sentiment"], "⚪")
-                lines.append(f"  {se} {n['title'][:60]}")
-        return title, "\n".join(lines), f"{result['code']} 情绪 {result['score']:.2f}"
+        """格式化综合情绪为飞书卡片"""
+        market = result.get("market", {})
+        kols = result.get("kols", {})
 
-    def send_feishu(self, webhook_url: str, results: list[dict],
-                    title: str = "📊 市场情绪日报") -> bool:
-        """推送情绪日报到飞书"""
+        emoji = {"hot": "🔥", "cold": "🧊", "neutral": "⚪"}
+        title = f"{emoji.get(result.get('label', 'neutral'), '⚪')} A股情绪 {result.get('combined_score', 0):.0f}/100"
+
+        lines = [f"**{result.get('label_cn', '')}**\n"]
+
+        # 市场量化
+        lines.append(f"**📊 市场温度: {result.get('combined_score', 0):.1f}/100**")
+        zt = market.get("zt_count")
+        dt = market.get("dt_count")
+        if zt is not None and dt is not None:
+            lines.append(f"- 涨停 **{zt}** 家 / 跌停 **{dt}** 家")
+        vr = market.get("volume_ratio")
+        if vr:
+            lines.append(f"- 成交额 {vr:.2f} 倍于20日均值")
+        lines.append(f"- 量化温度: {market.get('temperature', 0):.0f}/100")
+
+        # 大V情绪
+        lines.append(f"\n**🎙️ 大V情绪: {kols.get('avg_score', 0):+.2f} ({kols.get('stance', 'neutral')})**")
+        for kol in kols.get("kols", []):
+            k_score = kol.get("score", 0)
+            k_stance = kol.get("stance", "neutral")
+            k_em = {"positive": "📈", "negative": "📉", "neutral": "⚪"}.get(k_stance, "⚪")
+            lines.append(f"- {k_em} **{kol['name']}**: {k_score:+.2f} ({k_stance})")
+            if kol.get("snippets"):
+                top = kol["snippets"][0]
+                lines.append(f"  `{top['title'][:45]}`")
+
+        tag = f"A股情绪 {result.get('combined_score', 0):.0f}/100 · {datetime.now(timezone(timedelta(hours=8))).strftime('%m/%d %H:%M')}"
+        return title, "\n".join(lines), tag
+
+    def send_feishu(self, webhook_url: str, result: dict) -> bool:
+        """推送综合情绪到飞书"""
         if not webhook_url:
             return False
-        lines = [f"**{title}**\n"]
-        for r in results:
-            if "error" in r:
-                lines.append(f"- {r.get('name', r['code'])}: ❌ {r['error']}")
-                continue
-            em = {"positive": "🟢", "negative": "🔴", "neutral": "⚪"}.get(
-                r.get("sentiment", "neutral"), "⚪")
-            s = r.get("score", 0)
-            lines.append(
-                f"- {em} **{r['name']}** ({r['code']}): "
-                f"情绪 **{s:+.2f}** | 新闻 {r['total_articles']}条 "
-                f"({r['positive_articles']}/{r['negative_articles']})"
-            )
-            bullish = r.get("bullish_keywords", [])
-            bearish = r.get("bearish_keywords", [])
-            if bullish or bearish:
-                parts = []
-                if bullish:
-                    parts.append(f"📈{' '.join(bullish[:3])}")
-                if bearish:
-                    parts.append(f"📉{' '.join(bearish[:3])}")
-                lines.append(f"  {' '.join(parts)}")
-        lines.append(
-            f"\n📡 {datetime.now(timezone(timedelta(hours=8))).strftime('%m/%d %H:%M')}")
-        body = "\n".join(lines)
-
+        title, body, tag = self.format_feishu(result)
         card = {
             "config": {"wide_screen_mode": True},
             "header": {
                 "title": {"tag": "lark_md", "content": title},
-                "template": "blue",
+                "template": "red" if result.get("label") == "hot" else (
+                    "blue" if result.get("label") == "cold" else "grey"),
             },
             "elements": [
                 {"tag": "div", "text": {"tag": "lark_md", "content": body}},
                 {"tag": "hr"},
                 {"tag": "note", "element": {"tag": "plain_text",
-                  "content": "数据: 东方财富个股新闻"}},
+                  "content": f"{tag} · 数据: akshare + DuckDuckGo"}},
             ],
         }
         try:
