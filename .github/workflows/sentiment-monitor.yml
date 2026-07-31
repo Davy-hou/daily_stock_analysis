@@ -14,7 +14,7 @@ concurrency:
 jobs:
   sentiment:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
 
     steps:
       - name: 检出代码
@@ -34,4 +34,4 @@ jobs:
       - name: 运行情绪分析
         env:
           FEISHU_WEBHOOK_URL: ${{ secrets.FEISHU_WEBHOOK_URL }}
-        run: python scripts/sentiment_monitor.py
+        run: python -u scripts/sentiment_monitor.py

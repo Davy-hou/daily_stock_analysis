@@ -19,6 +19,7 @@ import html
 import logging
 import math
 import re
+import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta, timezone
@@ -231,6 +232,26 @@ class KOLSentimentTracker:
 # ── 市场量化指标 ──────────────────────────────────────────────
 
 
+def _run_with_timeout(fn, timeout: float, *args, **kwargs):
+    """在线程中运行 fn，超时则返回 None（避免外部接口无超时挂死）"""
+    result = {}
+
+    def _worker():
+        try:
+            result["value"] = fn(*args, **kwargs)
+        except Exception as e:
+            result["error"] = e
+
+    t = threading.Thread(target=_worker, daemon=True)
+    t.start()
+    t.join(timeout)
+    if t.is_alive():
+        return None
+    if "error" in result:
+        raise result["error"]
+    return result.get("value")
+
+
 class MarketSentimentAnalyzer:
     """市场量化情绪指标"""
 
@@ -239,21 +260,20 @@ class MarketSentimentAnalyzer:
 
     def _get_market_breadth(self) -> dict:
         """涨停/跌停家数"""
+        zt_count, dt_count = -1, -1
         try:
             import akshare as ak
-            zt = ak.stock_zt_pool_em(date=self.date)
+            zt = _run_with_timeout(ak.stock_zt_pool_em, 30, date=self.date)
             zt_count = len(zt) if zt is not None else 0
         except Exception as e:
             logger.debug("zt pool failed: %s", e)
-            zt_count = -1
 
         try:
             import akshare as ak
-            dt = ak.stock_zt_pool_dtgc_em(date=self.date)
+            dt = _run_with_timeout(ak.stock_zt_pool_dtgc_em, 30, date=self.date)
             dt_count = len(dt) if dt is not None else 0
         except Exception as e:
             logger.debug("dt pool failed: %s", e)
-            dt_count = -1
 
         return {"zt_count": zt_count, "dt_count": dt_count}
 
@@ -261,7 +281,7 @@ class MarketSentimentAnalyzer:
         """市场成交量 vs 20日均值 (新浪日线)"""
         try:
             import akshare as ak
-            df = ak.stock_zh_index_daily(symbol="sh000001")
+            df = _run_with_timeout(ak.stock_zh_index_daily, 30, symbol="sh000001")
             if df is None or df.empty:
                 return {"amount": None, "ma20": None, "ratio": None}
             df = df.sort_values("date").tail(25)
@@ -349,10 +369,10 @@ class ChinaSentimentService:
         """大V情绪"""
         return self.kol_tracker.analyze_all()
 
-    def analyze_all(self) -> dict:
+    def analyze_all(self, market: dict | None = None, kols: dict | None = None) -> dict:
         """综合分析，输出冰点/热点判断"""
-        market = self.analyze_market()
-        kols = self.analyze_kols()
+        market = market if market is not None else self.analyze_market()
+        kols = kols if kols is not None else self.analyze_kols()
 
         # 综合: 70% 量化 + 30% 大V
         market_temp = market.get("temperature", 50)
