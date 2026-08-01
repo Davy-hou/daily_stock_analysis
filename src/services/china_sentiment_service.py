@@ -122,9 +122,9 @@ DEFAULT_KOLS = [
     {"name": "李大霄", "style": "机构派",
      "search_terms": ["李大霄 最新 股市 观点", "李大霄 A股 底部 观点"]},
     {"name": "林园", "style": "私募价值派",
-     "search_terms": ["林园 最新观点 股市", "林园 A股 观点 最新"]},
+     "search_terms": ["林园 股市", "林园 A股"]},
     {"name": "李蓓", "style": "私募宏观",
-     "search_terms": ["李蓓 半夏投资 观点", "李蓓 A股 最新 观点"]},
+     "search_terms": ["李蓓 半夏 股市", "李蓓 A股"]},
 ]
 
 
@@ -146,16 +146,27 @@ class KOLSentimentTracker:
         )
         if resp.status_code != 200:
             return []
-        links = re.findall(
-            r'<a[^>]*class="result-link"[^>]*href="([^"]+)"[^>]*>(.*?)</a>',
-            resp.text, re.DOTALL,
-        )
-        if not links:
-            links = re.findall(
-                r'<a[^>]*href="(https?://[^"]+)"[^>]*>(.*?)</a>',
-                resp.text, re.DOTALL,
-            )
+        # DDG lite: 每条结果 <a class="result-link">title</a> 后跟
+        # <td class="result-snippet">摘要</td>，一行一条
+        rows = re.split(r'<tr[^>]*>', resp.text)
         out = []
+        for row in rows:
+            m = re.search(r'class="result-link"[^>]*href="([^"]+)"[^>]*>(.*?)</a>', row, re.DOTALL)
+            if not m:
+                continue
+            title = html.unescape(re.sub(r"<[^>]+>", "", m.group(2))).strip()
+            if not title:
+                continue
+            snip_m = re.search(r'class="result-snippet"[^>]*>(.*?)</td>', row, re.DOTALL)
+            snippet = html.unescape(re.sub(r"<[^>]+>", "", snip_m.group(1))).strip() if snip_m else ""
+            out.append({"title": title, "url": m.group(1), "snippet": snippet})
+            if len(out) >= max_results:
+                break
+        if out:
+            return out
+        # 兜底: 通用 <a href> 解析
+        links = re.findall(
+            r'<a[^>]*href="(https?://[^"]+)"[^>]*>(.*?)</a>', resp.text, re.DOTALL)
         for url, title in links[:max_results]:
             clean = html.unescape(re.sub(r"<[^>]+>", "", title)).strip()
             if clean:
@@ -237,7 +248,9 @@ class KOLSentimentTracker:
         snippets = []
         for r in all_results:
             title = r["title"]
-            s = _score_text(title)
+            snippet = r.get("snippet", "")
+            text = f"{title} {snippet}".strip()
+            s = _score_text(text)
             scores.append(s)
             snippets.append({"title": title, "url": r["url"], "score": round(s, 2)})
 
