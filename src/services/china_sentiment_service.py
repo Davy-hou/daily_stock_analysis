@@ -121,11 +121,44 @@ DEFAULT_KOLS = [
      "search_terms": ["月风投资笔记 股市 观点", "吴悦风 月风 A股 最新"]},
     {"name": "李大霄", "style": "机构派",
      "search_terms": ["李大霄 最新 股市 观点", "李大霄 A股 底部 观点"]},
-    {"name": "林园", "style": "私募价值派",
-     "search_terms": ["林园 股市", "林园 A股"]},
-    {"name": "李蓓", "style": "私募宏观",
-     "search_terms": ["李蓓 半夏 股市", "李蓓 A股"]},
+    {"name": "杨德龙", "style": "机构派",
+     "search_terms": ["杨德龙 看多 A股", "杨德龙 牛市 观点", "杨德龙 救市 A股"]},
+    {"name": "陈宇", "style": "私募价值派",
+     "search_terms": ["神农投资 陈宇 牛市 看好", "陈宇 神农 A股 机会"]},
 ]
+
+
+_ZH_CHAR_RE = re.compile(r"[\u4e00-\u9fff]")
+
+
+_HIRAGANA_KATAKANA_RE = re.compile(r"[\u3040-\u30ff]")
+_LATIN_RE = re.compile(r"[A-Za-z]")
+
+
+def _is_relevant(result: dict) -> bool:
+    """过滤无关结果：标题须以中文为主，且不含明显垃圾关键词"""
+    title = result.get("title", "")
+    if not title:
+        return False
+    # 日文/韩文/纯英文标题排除
+    if not _ZH_CHAR_RE.search(title):
+        return False
+    if _HIRAGANA_KATAKANA_RE.search(title):
+        return False
+    zh_chars = len(_ZH_CHAR_RE.findall(title))
+    latin_chars = len(_LATIN_RE.findall(title))
+    if latin_chars > zh_chars * 2:
+        return False
+    junk = ["sex", "porn", "comics", "adult", "muses", "gambling", "casino",
+            "下载器", "成人", "色情", "裸聊", "博彩", "彩票", "quote of the day"]
+    lower = title.lower()
+    if any(j in lower for j in junk):
+        return False
+    return True
+
+
+def _clean_results(results: list[dict]) -> list[dict]:
+    return [r for r in results if _is_relevant(r)]
 
 
 class KOLSentimentTracker:
@@ -235,6 +268,7 @@ class KOLSentimentTracker:
         ]:
             try:
                 results = fn(query, max_results)
+                results = _clean_results(results)
                 if results:
                     logger.debug("search %s via %s: %d 条", query, name, len(results))
                     return results
