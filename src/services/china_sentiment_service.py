@@ -167,6 +167,24 @@ class KOLSentimentTracker:
             out.append({"title": clean, "url": url, "snippet": snippet})
         return out
 
+    def _bing_rss(self, query: str, max_results: int) -> list[dict]:
+        """必应 RSS 接口，返回结构化结果"""
+        resp = requests.get(
+            "https://www.bing.com/search",
+            params={"q": query, "format": "rss"},
+            headers={"User-Agent": "Mozilla/5.0"}, timeout=8,
+        )
+        if resp.status_code != 200:
+            return []
+        items = re.findall(
+            r'<item>.*?<title>(.*?)</title>.*?<link>(.*?)</link>', resp.text, re.DOTALL)
+        out = []
+        for title, url in items[:max_results]:
+            clean = html.unescape(title).strip()
+            if clean and clean != "Bing: " + query:
+                out.append({"title": clean, "url": html.unescape(url).strip()})
+        return out
+
     def _bing(self, query: str, max_results: int) -> list[dict]:
         # 依次尝试国际版 / 中文版 bing，取首个有结果的
         for base in ("https://www.bing.com/search", "https://cn.bing.com/search"):
@@ -211,6 +229,7 @@ class KOLSentimentTracker:
         """多源搜索，返回首个成功源的结果"""
         for name, fn in [
             ("duckduckgo", self._ddg),
+            ("bing_rss", self._bing_rss),
             ("bing", self._bing),
             ("sogou", self._sogou),
         ]:
