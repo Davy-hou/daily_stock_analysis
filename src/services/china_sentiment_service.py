@@ -88,10 +88,20 @@ def _classify(score: float) -> str:
 # ── 大V配置 ───────────────────────────────────────────────────
 
 DEFAULT_KOLS = [
-    {"name": "峰哥亡命天涯",
-     "search_terms": ["峰哥亡命天涯 清仓", "峰哥亡命天涯 A股", "峰哥亡命天涯 股市"]},
-    {"name": "小冰冰",
-     "search_terms": ["小冰冰 炒股", "小冰冰 A股", "小冰冰 股市 复盘"]},
+    {"name": "峰哥亡命天涯", "style": "散户反指",
+     "search_terms": ["峰哥亡命天涯 清仓", "峰哥亡命天涯 A股", "峰哥亡命天涯 股市 最新"]},
+    {"name": "淘气天尊", "style": "散户技术派",
+     "search_terms": ["淘气天尊 股市 收评 最新", "淘气天尊 A股 抄底", "淘气天尊 微博 股市"]},
+    {"name": "但斌", "style": "私募价值派",
+     "search_terms": ["但斌 最新观点 A股", "但斌 大跌 敢买", "但斌 人工智能 牛市"]},
+    {"name": "月风_投资笔记", "style": "私募宏观",
+     "search_terms": ["月风 投资笔记 股市 观点", "月风投资笔记 A股 最新"]},
+    {"name": "天津股侠", "style": "老牌散户",
+     "search_terms": ["天津股侠 股市 观点", "天津股侠 A股 最新"]},
+    {"name": "鑫多多", "style": "游资牛散",
+     "search_terms": ["鑫多多 股市 最新", "鑫多多 A股 观点", "鑫多多 刘鑫 减持"]},
+    {"name": "小冰冰", "style": "散户",
+     "search_terms": ["小冰冰 炒股 最新", "小冰冰 A股 股市", "小冰冰 股市 复盘"]},
 ]
 
 
@@ -181,6 +191,7 @@ class KOLSentimentTracker:
     def analyze_kol(self, kol: dict) -> dict:
         """分析单个大V情绪"""
         name = kol["name"]
+        style = kol.get("style", "")
         all_results: list[dict] = []
         for term in kol.get("search_terms", [name]):
             for r in self.search(term):
@@ -188,7 +199,7 @@ class KOLSentimentTracker:
 
         if not all_results:
             return {
-                "name": name, "score": 0.0, "stance": "neutral",
+                "name": name, "style": style, "score": 0.0, "stance": "neutral",
                 "sources": 0, "snippets": [], "raw": [],
             }
 
@@ -205,6 +216,7 @@ class KOLSentimentTracker:
 
         return {
             "name": name,
+            "style": style,
             "score": round(avg, 3),
             "stance": stance,
             "sources": len(snippets),
@@ -221,7 +233,7 @@ class KOLSentimentTracker:
                     results.append(f.result())
                 except Exception as e:
                     logger.error("KOL %s: %s", fut[f], e)
-                    results.append({"name": fut[f], "score": 0.0, "stance": "neutral",
+                    results.append({"name": fut[f], "style": "", "score": 0.0, "stance": "neutral",
                                     "sources": 0, "snippets": []})
 
         scores = [r["score"] for r in results if r.get("sources", 0) > 0]
@@ -427,7 +439,9 @@ class ChinaSentimentService:
             k_score = kol.get("score", 0)
             k_stance = kol.get("stance", "neutral")
             k_em = {"positive": "📈", "negative": "📉", "neutral": "⚪"}.get(k_stance, "⚪")
-            lines.append(f"- {k_em} **{kol['name']}**: {k_score:+.2f} ({k_stance})")
+            k_style = kol.get("style", "")
+            style_txt = f"({k_style})" if k_style else ""
+            lines.append(f"- {k_em} **{kol['name']}**{style_txt}: {k_score:+.2f} ({k_stance})")
             if kol.get("snippets"):
                 top = kol["snippets"][0]
                 lines.append(f"  `{top['title'][:45]}`")

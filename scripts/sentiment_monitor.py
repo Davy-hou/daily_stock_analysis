@@ -32,7 +32,9 @@ def main():
     for kol in kols.get("kols", []):
         em = {"positive": "📈", "negative": "📉", "neutral": "⚪"}.get(
             kol.get("stance", "neutral"), "⚪")
-        print(f"  {em} {kol['name']}: {kol.get('score', 0):+.3f} "
+        style = kol.get("style", "")
+        style_txt = f"({style})" if style else ""
+        print(f"  {em} {kol['name']} {style_txt}: {kol.get('score', 0):+.3f} "
               f"({kol.get('stance', '?')})  来源 {kol.get('sources', 0)} 条", flush=True)
         for s in kol.get("snippets", [])[:2]:
             print(f"      - {s['title'][:50]}", flush=True)
