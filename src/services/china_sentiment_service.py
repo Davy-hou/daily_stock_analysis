@@ -146,31 +146,25 @@ class KOLSentimentTracker:
         )
         if resp.status_code != 200:
             return []
-        # DDG lite: 每条结果 <a class="result-link">title</a> 后跟
-        # <td class="result-snippet">摘要</td>，一行一条
-        rows = re.split(r'<tr[^>]*>', resp.text)
-        out = []
-        for row in rows:
-            m = re.search(r'class="result-link"[^>]*href="([^"]+)"[^>]*>(.*?)</a>', row, re.DOTALL)
-            if not m:
-                continue
-            title = html.unescape(re.sub(r"<[^>]+>", "", m.group(2))).strip()
-            if not title:
-                continue
-            snip_m = re.search(r'class="result-snippet"[^>]*>(.*?)</td>', row, re.DOTALL)
-            snippet = html.unescape(re.sub(r"<[^>]+>", "", snip_m.group(1))).strip() if snip_m else ""
-            out.append({"title": title, "url": m.group(1), "snippet": snippet})
-            if len(out) >= max_results:
-                break
-        if out:
-            return out
-        # 兜底: 通用 <a href> 解析
         links = re.findall(
-            r'<a[^>]*href="(https?://[^"]+)"[^>]*>(.*?)</a>', resp.text, re.DOTALL)
-        for url, title in links[:max_results]:
+            r'<a[^>]*class="result-link"[^>]*href="([^"]+)"[^>]*>(.*?)</a>',
+            resp.text, re.DOTALL,
+        )
+        snippets = re.findall(r'class="result-snippet"[^>]*>(.*?)</td>', resp.text, re.DOTALL)
+        if not links:
+            # 兜底: 通用 <a href> 解析
+            links = re.findall(
+                r'<a[^>]*href="(https?://[^"]+)"[^>]*>(.*?)</a>', resp.text, re.DOTALL)
+            snippets = []
+        out = []
+        for i, (url, title) in enumerate(links[:max_results]):
             clean = html.unescape(re.sub(r"<[^>]+>", "", title)).strip()
-            if clean:
-                out.append({"title": clean, "url": url})
+            if not clean:
+                continue
+            snippet = ""
+            if i < len(snippets):
+                snippet = html.unescape(re.sub(r"<[^>]+>", "", snippets[i])).strip()
+            out.append({"title": clean, "url": url, "snippet": snippet})
         return out
 
     def _bing(self, query: str, max_results: int) -> list[dict]:
