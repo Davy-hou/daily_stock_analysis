@@ -45,6 +45,12 @@ def main():
     print(f"  综合得分: {result['combined_score']:.1f}/100", flush=True)
     print(f"  判断: {result['label_cn']}", flush=True)
 
+    # 反向指标背离提示
+    div = result.get("divergence", {})
+    if div.get("direction", "aligned") != "aligned":
+        print(f"  {div.get('label_cn', '')}", flush=True)
+        print(f"  (市场温度 {div.get('market_temp')} vs 大V温度 {div.get('kol_temp')})", flush=True)
+
     # 飞书推送
     webhook = os.environ.get("FEISHU_WEBHOOK_URL", "")
     if webhook:

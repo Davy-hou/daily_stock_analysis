@@ -119,12 +119,12 @@ DEFAULT_KOLS = [
      "search_terms": ["但斌 最新观点 股市", "但斌 看好 A股 观点", "但斌 人工智能 十年牛市"]},
     {"name": "月风_投资笔记", "style": "私募宏观",
      "search_terms": ["月风投资笔记 股市 观点", "吴悦风 月风 A股 最新"]},
-    {"name": "天津股侠", "style": "老牌散户",
-     "search_terms": ["天津股侠 股市 观点 最新"]},
-    {"name": "鑫多多", "style": "游资牛散",
-     "search_terms": ["鑫多多 刘鑫 股市", "网红 鑫多多 A股 观点"]},
-    {"name": "小冰冰", "style": "散户",
-     "search_terms": ["小冰冰 炒股 最新", "冰冰小美 炒股 股市"]},
+    {"name": "李大霄", "style": "机构派",
+     "search_terms": ["李大霄 最新 股市 观点", "李大霄 A股 底部 观点"]},
+    {"name": "望京博格", "style": "基金博主",
+     "search_terms": ["望京博格 股市 观点", "望京博格 A股 最新"]},
+    {"name": "唐史主任司马迁", "style": "老牌财经",
+     "search_terms": ["唐史主任司马迁 股市 观点", "唐史主任司马迁 A股 最新"]},
 ]
 
 
@@ -416,6 +416,10 @@ class ChinaSentimentService:
 
         combined = round(0.7 * market_temp + 0.3 * kol_temp, 1)
 
+        # 反向指标检测: 大V观点与市场量化方向背离
+        # 大V集体看空但市场偏热 / 大V集体看多但市场偏冷 → 可能是反向信号
+        divergence = self._detect_divergence(market_temp, kol_score)
+
         if combined >= 70:
             label = "hot"
             label_cn = "🔥 热点（市场狂热，注意风险）"
@@ -433,6 +437,40 @@ class ChinaSentimentService:
             "combined_score": combined,
             "label": label,
             "label_cn": label_cn,
+            "divergence": divergence,
+        }
+
+    def _detect_divergence(self, market_temp: float, kol_score: float) -> dict:
+        """检测大V情绪与市场量化情绪的背离（反向指标信号）
+
+        大V温度由 kol_score(-1~1) 映射: kol_temp=(kol_score+1)/2*100
+        背离判定:
+        - 大V明显看空 (kol_temp<=35) + 市场偏热 (market_temp>=60) → 大V逆势看空
+        - 大V明显看多 (kol_temp>=65) + 市场偏冷 (market_temp<=40) → 大V逆势看多
+        """
+        kol_temp = (kol_score + 1) / 2 * 100
+        base = {
+            "market_temp": round(market_temp, 1),
+            "kol_temp": round(kol_temp, 1),
+        }
+
+        if kol_temp <= 35 and market_temp >= 60:
+            return {
+                **base,
+                "direction": "kol_bearish_market_hot",
+                "label_cn": "⚠️ 大V集体看空，但市场偏热 → 警惕反向信号（大V逆势，可能是顶部预警）",
+            }
+        if kol_temp >= 65 and market_temp <= 40:
+            return {
+                **base,
+                "direction": "kol_bullish_market_cold",
+                "label_cn": "💡 大V集体看多，但市场偏冷 → 注意反向机会（大V逆势抄底）",
+            }
+
+        return {
+            **base,
+            "direction": "aligned",
+            "label_cn": "大V观点与市场方向一致",
         }
 
     def format_feishu(self, result: dict) -> tuple[str, str, str]:
@@ -455,6 +493,11 @@ class ChinaSentimentService:
         if vr:
             lines.append(f"- 成交额 {vr:.2f} 倍于20日均值")
         lines.append(f"- 量化温度: {market.get('temperature', 0):.0f}/100")
+
+        # 反向指标背离提示
+        divergence = result.get("divergence", {})
+        if divergence.get("direction", "aligned") != "aligned":
+            lines.append(f"\n**{divergence.get('label_cn', '')}**")
 
         # 大V情绪
         lines.append(f"\n**🎙️ 大V情绪: {kols.get('avg_score', 0):+.2f} ({kols.get('stance', 'neutral')})**")
