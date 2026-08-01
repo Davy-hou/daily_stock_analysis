@@ -163,21 +163,28 @@ class KOLSentimentTracker:
         return out
 
     def _bing(self, query: str, max_results: int) -> list[dict]:
-        resp = requests.get(
-            "https://cn.bing.com/search", params={"q": query},
-            headers={"User-Agent": "Mozilla/5.0"}, timeout=8,
-        )
-        if resp.status_code != 200:
-            return []
-        blocks = re.findall(r'<li class="b_algo"[^>]*>(.*?)</li>', resp.text, re.DOTALL)
-        out = []
-        for b in blocks[:max_results]:
-            m = re.search(r'<h2>.*?<a[^>]*href="([^"]+)"[^>]*>(.*?)</a>', b, re.DOTALL)
-            if m:
-                title = html.unescape(re.sub(r"<[^>]+>", "", m.group(2))).strip()
-                if title:
-                    out.append({"title": title, "url": m.group(1)})
-        return out
+        # 依次尝试国际版 / 中文版 bing，取首个有结果的
+        for base in ("https://www.bing.com/search", "https://cn.bing.com/search"):
+            try:
+                resp = requests.get(
+                    base, params={"q": query},
+                    headers={"User-Agent": "Mozilla/5.0"}, timeout=8,
+                )
+                if resp.status_code != 200:
+                    continue
+                blocks = re.findall(r'<li class="b_algo"[^>]*>(.*?)</li>', resp.text, re.DOTALL)
+                out = []
+                for b in blocks[:max_results]:
+                    m = re.search(r'<h2>.*?<a[^>]*href="([^"]+)"[^>]*>(.*?)</a>', b, re.DOTALL)
+                    if m:
+                        title = html.unescape(re.sub(r"<[^>]+>", "", m.group(2))).strip()
+                        if title:
+                            out.append({"title": title, "url": m.group(1)})
+                if out:
+                    return out
+            except Exception as e:
+                logger.debug("bing %s failed: %s", base, e)
+        return []
 
     def _sogou(self, query: str, max_results: int) -> list[dict]:
         s = requests.Session()
