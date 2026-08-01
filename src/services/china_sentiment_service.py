@@ -55,9 +55,23 @@ BEARISH_KEYWORDS = [
 EXTREME_BEARISH = ["清仓", "销户", "割肉", "认输", "亏麻", "崩盘", "退市", "别玩了"]
 EXTREME_BULLISH = ["牛市", "满仓", "梭哈", "涨停潮", "踏空", "冲天", "主升浪"]
 
+# 动作词：直接表达大V操作/立场，权重 2 倍（市场描述词不干扰观点判断）
+BULLISH_ACTIONS = [
+    "抄底", "加仓", "买入", "增持", "做多", "看多", "敢买", "满仓",
+    "梭哈", "低吸", "上车", "反弹", "反攻", "拉升", "打光",
+]
+BEARISH_ACTIONS = [
+    "清仓", "减仓", "卖出", "减持", "做空", "看空", "割肉", "销户",
+    "认输", "撤退", "离场", "出清", "跑路", "止损", "抛售",
+]
+
 
 def _score_text(text: str) -> float:
-    """正负面打分，返回 [-1, 1]"""
+    """正负面打分，返回 [-1, 1]
+
+    动作词（加仓/清仓等）权重 2 倍，市场描述词（大跌/大涨）权重 1 倍，
+    避免“大跌敢买”这类逆向表达被误判为看空。
+    """
     if not text:
         return 0.0
     score = 0.0
@@ -71,6 +85,15 @@ def _score_text(text: str) -> float:
         if kw in text:
             score -= 1.0
             matched += 1
+    # 动作词 2 倍权重
+    for kw in BULLISH_ACTIONS:
+        if kw in text:
+            score += 2.0
+            matched += 2
+    for kw in BEARISH_ACTIONS:
+        if kw in text:
+            score -= 2.0
+            matched += 2
 
     if matched == 0:
         return 0.0
@@ -89,19 +112,19 @@ def _classify(score: float) -> str:
 
 DEFAULT_KOLS = [
     {"name": "峰哥亡命天涯", "style": "散户反指",
-     "search_terms": ["峰哥亡命天涯 清仓", "峰哥亡命天涯 A股", "峰哥亡命天涯 股市 最新"]},
+     "search_terms": ["峰哥亡命天涯 清仓 销户", "峰哥亡命天涯 A股 最新"]},
     {"name": "淘气天尊", "style": "散户技术派",
-     "search_terms": ["淘气天尊 股市 收评 最新", "淘气天尊 A股 抄底", "淘气天尊 微博 股市"]},
+     "search_terms": ["淘气天尊 收评 抄底", "淘气天尊 A股 反攻 最新"]},
     {"name": "但斌", "style": "私募价值派",
-     "search_terms": ["但斌 最新观点 A股", "但斌 大跌 敢买", "但斌 人工智能 牛市"]},
+     "search_terms": ["但斌 最新观点 股市", "但斌 看好 A股 观点", "但斌 人工智能 十年牛市"]},
     {"name": "月风_投资笔记", "style": "私募宏观",
-     "search_terms": ["月风 投资笔记 股市 观点", "月风投资笔记 A股 最新"]},
+     "search_terms": ["月风投资笔记 股市 观点", "吴悦风 月风 A股 最新"]},
     {"name": "天津股侠", "style": "老牌散户",
-     "search_terms": ["天津股侠 股市 观点", "天津股侠 A股 最新"]},
+     "search_terms": ["天津股侠 股市 观点 最新"]},
     {"name": "鑫多多", "style": "游资牛散",
-     "search_terms": ["鑫多多 股市 最新", "鑫多多 A股 观点", "鑫多多 刘鑫 减持"]},
+     "search_terms": ["鑫多多 刘鑫 股市", "网红 鑫多多 A股 观点"]},
     {"name": "小冰冰", "style": "散户",
-     "search_terms": ["小冰冰 炒股 最新", "小冰冰 A股 股市", "小冰冰 股市 复盘"]},
+     "search_terms": ["小冰冰 炒股 最新", "冰冰小美 炒股 股市"]},
 ]
 
 
