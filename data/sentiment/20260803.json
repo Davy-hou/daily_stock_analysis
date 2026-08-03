@@ -2,63 +2,72 @@
   "date": "20260803",
   "market": {
     "date": "20260803",
-    "zt_count": 53,
-    "dt_count": 3,
-    "volume_ratio": 1.03,
-    "temperature": 51.6,
+    "zt_count": 75,
+    "dt_count": 8,
+    "volume_ratio": 0.9,
+    "temperature": 34.1,
     "label": "neutral",
     "label_cn": "⚪ 正常",
     "breadth": {
-      "zt_count": 53,
-      "dt_count": 3
+      "zt_count": 75,
+      "dt_count": 8
     },
     "volume": {
-      "amount": 59752942700.0,
-      "ma20": 58042372585.0,
-      "ratio": 1.029471057760345
+      "amount": 52451696000.0,
+      "ma20": 58019971030.0,
+      "ratio": 0.9040283038555664
     }
   },
   "kols": {
     "kols": [
       {
-        "name": "月风_投资笔记",
-        "style": "私募宏观",
+        "name": "淘气天尊",
+        "style": "散户技术派",
         "score": 0.6,
         "stance": "positive",
-        "sources": 10,
+        "sources": 5,
         "snippets": [
           {
-            "title": "月风_投资笔记从互联网上消失了 我今天本来是想请大家吃瓜 ...",
-            "url": "https://xueqiu.com/7318086163/286956307",
+            "title": "哀鸿遍野下可否抄底",
+            "url": "http://mp.weixin.qq.com/s?src=3&amp;timestamp=1785754451&amp;ver=1&amp;signature=XZZrOFhSLNu9p29KKdQPGoC55RERoxCv2me9775UNNmyJzLGuM0cFy9HfdlkkLI9FK2a*GCZuHqd*G93ioSqWgHEycEe1QHoXLiLsTp16NR0wVbM3UeylePBwYmlF0heUY-nm4BY8pTI*E7*aKsUvKy6dmfg4tVyWphUJbDSHRI=",
             "score": 1.0
           },
           {
-            "title": "逆袭!吴悦风管理的\"三毛基\"半年反弹171％ 陈宇称牛市下半场 ...",
-            "url": "https://fund.eastmoney.com/a/202510193537961445.html",
+            "title": "淘气天尊电影免费观看-完整版-青年影院",
+            "url": "/link?url=DSOYnZeCC_qeGGiWDN8jSOnZhkv3RNz8pNbsSerfpEM4d2X6F0SQYA..",
             "score": 1.0
           },
           {
-            "title": "从\"3毛基\"到净值翻倍：网红私募月风管理产品1个半月大涨 ...",
-            "url": "https://finance.sina.com.cn/roll/2026-05-12/doc-inhxsawe9841744.shtml",
+            "title": "12月9号收评:抄底机会来了_知乎",
+            "url": "/link?url=hedJjaC291OfPyaFZYFLI4KQWvqt63NBKf04XdE8LXHkaF3qFikJpg..",
             "score": 1.0
           },
           {
-            "title": "嘉越月风投资创世号_基金净值_私募基金-私募排排网 ...",
-            "url": "https://dc.simuwang.com/product/HF00009TVY.html",
-            "score": 1.0
+            "title": "淘气天尊:听泉赏宝退出股市对投资者的启示!_古汉台网",
+            "url": "/link?url=DOb0bgH2eKi7q8el4Fr3lgFNpirTAiFL4l7l1vQzfFTm2yFXvarDKo6wdrVv32scIeZ8aQ291kY.",
+            "score": 0.0
           },
           {
-            "title": "跌进深渊，又爬了出来!太魔幻，知名网红私募要回本了...",
-            "url": "https://www.sohu.com/a/943940665_122280943",
-            "score": 1.0
+            "title": "淘气天尊2022.1.13股市收评:涨一天跌一天,是最难..._知乎",
+            "url": "/link?url=hedJjaC291OfPyaFZYFLI4KQWvqt63NBUH0kjnN4DiVBlO_MXXVlQQ..",
+            "score": 0.0
           }
         ]
       },
       {
+        "name": "李大霄",
+        "style": "机构派",
+        "score": 0.0,
+        "stance": "neutral",
+        "sources": 0,
+        "snippets": [],
+        "raw": []
+      },
+      {
         "name": "峰哥亡命天涯",
         "style": "散户反指",
-        "score": 0.2,
-        "stance": "positive",
+        "score": -0.4,
+        "stance": "negative",
         "sources": 10,
         "snippets": [
           {
@@ -82,42 +91,37 @@
             "score": -1.0
           },
           {
-            "title": "峰哥亡命天涯48小时清仓追涨再清仓，是真心反思还是流量 ...",
-            "url": "https://cj.sina.com.cn/articles/view/7880068208/1d5b04c7006801t2ti",
+            "title": "峰哥亡命天涯股票 - 抖音",
+            "url": "https://www.douyin.com/search/%E2%9C%A8%E5%B3%B0%E5%93%A5%E4%BA%A1%E5%91%BD%E5%A4%A9%E6%B6%AF%E8%82%A1%E7%A5%A8",
             "score": 1.0
           }
         ]
       },
       {
-        "name": "淘气天尊",
-        "style": "散户技术派",
-        "score": 0.719,
+        "name": "杨德龙",
+        "style": "机构派",
+        "score": 1.0,
         "stance": "positive",
-        "sources": 10,
+        "sources": 4,
         "snippets": [
           {
-            "title": "淘气天尊：抄底还是观望？_情绪_低点_市场",
-            "url": "https://www.sohu.com/a/1047015171_153995",
+            "title": "微博-随时随地发现新鲜事",
+            "url": "https://www.weibo.com/",
             "score": 1.0
           },
           {
-            "title": "淘气天尊：抄底信号再现，明日反攻! 各位淘粉们，大家收盘 ...",
-            "url": "https://xueqiu.com/7621060682/399861580",
+            "title": "登录 - 微博",
+            "url": "https://m.weibo.cn/?lang=zh-Hans",
             "score": 1.0
           },
           {
-            "title": "淘气天尊：等待午后抄底信号确认! 各位淘粉们，大家中午好 ...",
-            "url": "https://xueqiu.com/7621060682/398801132",
+            "title": "登录 - 微博",
+            "url": "https://passport.weibo.com/sso/signin",
             "score": 1.0
           },
           {
-            "title": "淘气天尊：等待午后抄底信号确认!_个股_市场_盘面",
-            "url": "https://www.sohu.com/a/1046916770_153995",
-            "score": 1.0
-          },
-          {
-            "title": "淘气天尊：如期大反攻后，千万别上头!_中金在线财经号",
-            "url": "http://mp.cnfol.com/34169/article/1785470547-142604246",
+            "title": "微博官方网页",
+            "url": "https://apps.weibo.com/3158834234/8s2qevYU",
             "score": 1.0
           }
         ]
@@ -125,76 +129,33 @@
       {
         "name": "但斌",
         "style": "私募价值派",
-        "score": 0.733,
+        "score": 0.533,
         "stance": "positive",
         "sources": 15,
         "snippets": [
           {
-            "title": "私募大佬但斌：大跌一定要敢买，刚把剩余的子弹打光!",
-            "url": "https://guba.eastmoney.com/news,cfhpl,1751326593.html",
+            "title": "但斌 - 雪球",
+            "url": "https://xueqiu.com/u/1102105103",
             "score": 1.0
           },
           {
-            "title": "但斌&#34;打光子弹&#34;抄底ai？ 但斌最新表态：&#34;我 ...",
-            "url": "https://xueqiu.com/1184285469/402900147",
+            "title": "但斌最新演讲：不要错失一个伟大的时代_腾讯新闻",
+            "url": "https://news.qq.com/rain/a/20260702A09IK500",
             "score": 1.0
           },
           {
-            "title": "但斌在东方港湾 2026 年会上的十大核心观点 - 今日头条",
-            "url": "https://www.toutiao.com/article/7604708980920713782/",
+            "title": "百亿私募大佬但斌卸任东方港湾总经理，已成香港居民，东方港湾回应",
+            "url": "https://www.jiemian.com/video/AGUCMQhmB2EBPlVi.html",
             "score": 1.0
           },
           {
-            "title": "但斌：仍看好人工智能10年牛市 目前只是一个阶段性调整而已",
-            "url": "https://stock.jrj.com.cn/2026/07/30133557953075.shtml",
+            "title": "但斌（深圳东方港湾投资管理股份有限公司创始人、董事长）_百度百科",
+            "url": "https://baike.baidu.com/item/%E4%BD%86%E6%96%8C/13350957",
             "score": 1.0
           },
           {
-            "title": "这个七月a股最大的赢家——但斌 - 知乎",
-            "url": "https://zhuanlan.zhihu.com/p/2066662144213530347",
-            "score": 1.0
-          }
-        ]
-      },
-      {
-        "name": "李大霄",
-        "style": "机构派",
-        "score": 0.0,
-        "stance": "neutral",
-        "sources": 0,
-        "snippets": [],
-        "raw": []
-      },
-      {
-        "name": "杨德龙",
-        "style": "机构派",
-        "score": 1.0,
-        "stance": "positive",
-        "sources": 5,
-        "snippets": [
-          {
-            "title": "杨德龙:国家队本轮救市成效显著建议大力增持A股和港股重要指...",
-            "url": "http://mp.weixin.qq.com/s?src=11&amp;timestamp=1785724516&amp;ver=6881&amp;signature=RsgXJvf0hDPAhDkyzgFzDuI22S3n*h0mFMcAiOhIvRL5Tks5vVCyF16qoE0u*09rMi7W*DVCVddbwrzrUxGOlRvtH-0vRHsK96K0Wd*CJsO-6SMyars4owPBmM2MV8o6&amp;new=1",
-            "score": 1.0
-          },
-          {
-            "title": "杨德龙丨美股的九年牛市与A股的三年熊市_哔哩哔哩_bilibili",
-            "url": "/link?url=hedJjaC291ObqPUCEo1zMuraEuczo-4WCU_PNz9JM0twD9LaEdqoWWJoX9PMeaCD",
-            "score": 1.0
-          },
-          {
-            "title": "杨德龙：中长期资金入市如何影响A股市场_哔哩哔哩_bilibili",
-            "url": "/link?url=hedJjaC291ObqPUCEo1zMuraEuczo-4WCU_PNz9JM0tH29pf612abrR_DxbM1KIJ",
-            "score": 1.0
-          },
-          {
-            "title": "[交易时间]边看边聊 杨德龙：2019年是A股“黄金十年”起点",
-            "url": "/link?url=a8xlm0X2uvd5xe4__9LFbuDVnBIotweFKPbX6AsMqgJ8ZspqLzv6WzZXpzSaEoIQXWEPgx9TTmjRyzYLOmNBvyHmfGkNvdZG",
-            "score": 1.0
-          },
-          {
-            "title": "杨德龙：MSCI将A股权重增至20%外资为何特别爱买白马股？_高清...",
-            "url": "/link?url=hedJjaC291NpdrCmyixjfnek8aHYAGFWeXvUZuTfA0nB-_KfFQMwo63mlRzfPLR2",
+            "title": "但斌 - 雪球",
+            "url": "https://xueqiu.com/u/1102105103",
             "score": 1.0
           }
         ]
@@ -204,46 +165,60 @@
         "style": "私募价值派",
         "score": 1.0,
         "stance": "positive",
+        "sources": 1,
+        "snippets": [
+          {
+            "title": "如何评价 OpenAI 凌晨发布的 GPT-5？ - 知乎",
+            "url": "https://www.zhihu.com/question/1936601885311239615",
+            "score": 1.0
+          }
+        ]
+      },
+      {
+        "name": "月风_投资笔记",
+        "style": "私募宏观",
+        "score": 0.6,
+        "stance": "positive",
         "sources": 10,
         "snippets": [
           {
-            "title": "神农投资陈宇:牛市王者归来!?切勿刻舟求剑,低估值、低价格...",
-            "url": "http://mp.weixin.qq.com/s?src=3&amp;timestamp=1785724512&amp;ver=1&amp;signature=-neuFM36QgEJm4TklC6PtwGF6q448-*dBVBtvHmtOdocSlg*IdbVwlvQX3iJxrLr88GtAzNq982ZD0ZYz6W2Syq05Meyd4yGzpLCsxwYcfqEqKMr-DQxb6eoxDQ5oCZqGEa7h74OhyaR7fkrdi7x1f9To*waCx5u-6HmeqGxE0I=",
+            "title": "月风_投资笔记从互联网上消失了 我今天本来是想请大家吃瓜 ...",
+            "url": "https://xueqiu.com/7318086163/286956307",
             "score": 1.0
           },
           {
-            "title": "神农投资的优势是什么?_知乎",
-            "url": "/link?url=hedJjaC291MBtMZVirtXo7CqjI0tE6P9Irl9kkee06Dtrc98QDiB27JHoyzodE74rHpvesDFo8t7Zq13x2Y3rg..",
+            "title": "逆袭!吴悦风管理的\"三毛基\"半年反弹171％ 陈宇称牛市下半场 ...",
+            "url": "https://fund.eastmoney.com/a/202510193537961445.html",
             "score": 1.0
           },
           {
-            "title": "想参加私募方面的理财私享会哪家更专业啊?_知乎",
-            "url": "/link?url=hedJjaC291MBtMZVirtXo7CqjI0tE6P9Bul2MezUYXA25l_l8FjhNq3mlRzfPLR2",
+            "title": "嘉越月风投资创世号_基金净值_私募基金-私募排排网 ...",
+            "url": "https://dc.simuwang.com/product/HF00009TVY.html",
             "score": 1.0
           },
           {
-            "title": "陈营长极品投资的微博_微博",
-            "url": "/link?url=DSOYnZeCC_qPrlV5CL4MK0rH8e96BR40_np13OcCZeUgOBuMIiUtJw..",
+            "title": "从\"3毛基\"到净值翻倍：网红私募月风管理产品1个半月大涨 ...",
+            "url": "https://finance.sina.com.cn/roll/2026-05-12/doc-inhxsawe9841744.shtml",
             "score": 1.0
           },
           {
-            "title": "投资日记20210113_知乎",
-            "url": "/link?url=hedJjaC291OfPyaFZYFLI4KQWvqt63NBgqs_g_9cQ09ZOFWiNedqNA..",
+            "title": "曾经的3毛基，近半年收益171%,逆袭了吗？ - 知乎",
+            "url": "https://zhuanlan.zhihu.com/p/1974406596881830527",
             "score": 1.0
           }
         ]
       }
     ],
-    "avg_score": 0.709,
+    "avg_score": 0.555,
     "stance": "positive"
   },
-  "combined_score": 61.8,
+  "combined_score": 47.2,
   "label": "neutral",
   "label_cn": "⚪ 正常",
   "divergence": {
-    "market_temp": 51.6,
-    "kol_temp": 85.5,
-    "direction": "aligned",
-    "label_cn": "大V观点与市场方向一致"
+    "market_temp": 34.1,
+    "kol_temp": 77.8,
+    "direction": "kol_bullish_market_cold",
+    "label_cn": "💡 大V集体看多，但市场偏冷 → 注意反向机会（大V逆势抄底）"
   }
 }
