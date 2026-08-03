@@ -342,7 +342,7 @@ class KOLSentimentTracker:
                 timeout=20,
             )
             content = (getattr(resp, "content", "") or "").strip()
-            value = float(content)
+            value = self._parse_llm_score(content)
         except Exception as e:
             logger.debug("LLM judge 失败 %s，回退关键词: %s", type(e).__name__, e)
             value = None
@@ -350,6 +350,26 @@ class KOLSentimentTracker:
         if value is not None:
             return max(-1.0, min(1.0, value))
         return _score_text(text)
+
+    @staticmethod
+    def _parse_llm_score(content: str) -> float | None:
+        """解析 LLM 输出的情绪分数，容忍多种格式"""
+        if not content:
+            return None
+        s = content.strip()
+        # 纯数字，如 0.6 / -0.4 / 1.0
+        m = re.search(r"[-+]?\d+\.?\d*", s)
+        if m:
+            return float(m.group())
+        # 文本立场
+        text = s.lower()
+        if "positive" in text or "看多" in text or "多头" in text:
+            return 0.6
+        if "negative" in text or "看空" in text or "空头" in text:
+            return -0.6
+        if "neutral" in text or "中性" in text:
+            return 0.0
+        return None
 
     def analyze_kol(self, kol: dict) -> dict:
         """分析单个大V情绪"""
