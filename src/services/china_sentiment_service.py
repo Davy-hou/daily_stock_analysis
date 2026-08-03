@@ -343,6 +343,10 @@ class KOLSentimentTracker:
             )
             content = (getattr(resp, "content", "") or "").strip()
             value = self._parse_llm_score(content)
+            if value is not None:
+                logger.info("LLM judge: %r -> %s", content[:60], value)
+            else:
+                logger.info("LLM judge 解析失败: %r, 回退关键词", content[:60])
         except Exception as e:
             logger.debug("LLM judge 失败 %s，回退关键词: %s", type(e).__name__, e)
             value = None
