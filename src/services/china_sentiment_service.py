@@ -326,6 +326,8 @@ class KOLSentimentTracker:
             if not adapter.is_available:
                 logger.debug("LLM 不可用，回退关键词打分")
                 return _score_text(text)
+            logger.info("LLM judge start, model=%s provider=%s",
+                        adapter.primary_provider, getattr(adapter, "_generation_backend_id", "?"))
 
             prompt = (
                 "你是A股市场情绪分析师。判断下面这位炒股大V的言论情绪立场。"
