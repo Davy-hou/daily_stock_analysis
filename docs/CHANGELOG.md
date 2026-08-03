@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - [新功能] 市场情绪日报大V检索优先接入付费搜索源（Tavily/Bocha/Brave/SerpAPI），中文金融命中率提升，免费源降级为 fallback
 - [改进] 大V言论情绪改用 LLM 判定（理解"大跌敢买"反转表述），LLM 不可用时回退关键词打分
 - [新功能] 市场情绪日报结果持久化为 data/sentiment/<date>.json 并写回仓库，支持历史回溯
+- [修复] 情绪判定 LLM 模型名加 gemini/ 前缀强制走 Gemini API，修复误走 Vertex 认证导致打分全部 +1.000 的问题
 
 ## [3.24.1] - 2026-06-28
 
