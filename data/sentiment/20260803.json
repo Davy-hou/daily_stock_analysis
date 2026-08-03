@@ -1,0 +1,274 @@
+{
+  "date": "20260803",
+  "market": {
+    "date": "20260803",
+    "zt_count": 49,
+    "dt_count": 1,
+    "volume_ratio": 1.03,
+    "temperature": 57.6,
+    "label": "neutral",
+    "label_cn": "⚪ 正常",
+    "breadth": {
+      "zt_count": 49,
+      "dt_count": 1
+    },
+    "volume": {
+      "amount": 59752942700.0,
+      "ma20": 58042372585.0,
+      "ratio": 1.029471057760345
+    }
+  },
+  "kols": {
+    "kols": [
+      {
+        "name": "淘气天尊",
+        "style": "散户技术派",
+        "score": 0.6,
+        "stance": "positive",
+        "sources": 10,
+        "snippets": [
+          {
+            "title": "淘气天尊：抄底信号再现，明日反攻! 各位淘粉们，大家收盘 ...",
+            "url": "https://xueqiu.com/7621060682/399861580",
+            "score": 1.0
+          },
+          {
+            "title": "淘气天尊：等待午后抄底信号确认!_个股_市场_盘面",
+            "url": "https://www.sohu.com/a/1046916770_153995",
+            "score": 1.0
+          },
+          {
+            "title": "淘气天尊：抄底信号出现敢于进场，然后等涨!",
+            "url": "https://www.sohu.com/a/998075931_153995",
+            "score": 1.0
+          },
+          {
+            "title": "淘气天尊：如期大反攻后，千万别上头!（附午后直播）",
+            "url": "https://caifuhao.eastmoney.com/news/20260731120211472535130",
+            "score": 1.0
+          },
+          {
+            "title": "淘气天尊：如期大反攻后，千万别上头!_中金在线财经号",
+            "url": "http://mp.cnfol.com/34169/article/1785470547-142604246",
+            "score": 1.0
+          }
+        ]
+      },
+      {
+        "name": "月风_投资笔记",
+        "style": "私募宏观",
+        "score": 0.312,
+        "stance": "positive",
+        "sources": 10,
+        "snippets": [
+          {
+            "title": "逆袭!吴悦风管理的\"三毛基\"半年反弹171％ 陈宇称牛市下半场 ...",
+            "url": "https://fund.eastmoney.com/a/202510193537961445.html",
+            "score": 1.0
+          },
+          {
+            "title": "六个月奇迹大涨近150%，\"脚踝斩\"的大v基金这次要回本了 ...",
+            "url": "https://xueqiu.com/1107854878/356676284",
+            "score": 0.707
+          },
+          {
+            "title": "从\"3毛基\"到净值翻倍：网红私募月风管理产品1个半月大涨 ...",
+            "url": "https://finance.sina.com.cn/roll/2026-05-12/doc-inhxsawe9841744.shtml",
+            "score": 0.707
+          },
+          {
+            "title": "六个月奇迹大涨近150%，\"脚踝斩\"的大V基金这次要回本了？",
+            "url": "https://wallstreetcn.com/articles/3757213",
+            "score": 0.707
+          },
+          {
+            "title": "月风_投资笔记 - 雪球",
+            "url": "https://xueqiu.com/u/fengloverita",
+            "score": 0.0
+          }
+        ]
+      },
+      {
+        "name": "峰哥亡命天涯",
+        "style": "散户反指",
+        "score": -0.8,
+        "stance": "negative",
+        "sources": 10,
+        "snippets": [
+          {
+            "title": "网红峰哥亏数百万清仓销户，折射亿万股民心声_腾讯新闻",
+            "url": "https://news.qq.com/rain/a/20260709A02Q1R00",
+            "score": -1.0
+          },
+          {
+            "title": "网红\"峰哥\"发长文彻底认输清仓：亏损认了，我买的不是股票 ...",
+            "url": "https://news.qq.com/rain/a/20260714A03B5B00",
+            "score": -1.0
+          },
+          {
+            "title": "网红峰哥亏数百万清仓销户，折射亿万股民心声 7月8日，A ...",
+            "url": "https://xueqiu.com/6797448550/399225831",
+            "score": -1.0
+          },
+          {
+            "title": "网红\"峰哥\"发长文彻底认输清仓：亏损认了，我买的不是股票 ...",
+            "url": "https://www.toutiao.com/article/7662254298437845556/",
+            "score": -1.0
+          },
+          {
+            "title": "峰哥亡命天涯48小时清仓追涨再清仓，是真心反思还是流量 ...",
+            "url": "https://cj.sina.com.cn/articles/view/7880068208/1d5b04c7006801t2ti",
+            "score": -1.0
+          }
+        ]
+      },
+      {
+        "name": "但斌",
+        "style": "私募价值派",
+        "score": 0.121,
+        "stance": "neutral",
+        "sources": 15,
+        "snippets": [
+          {
+            "title": "但斌&#34;打光子弹&#34;抄底ai？ 但斌最新表态：&#34;我 ...",
+            "url": "https://xueqiu.com/1184285469/402900147",
+            "score": 1.0
+          },
+          {
+            "title": "但斌：看好人工智能10年牛市，目前只是一个阶段性调整而已",
+            "url": "https://finance.sina.com.cn/stock/roll/2026-07-30/doc-inikqcsp5238562.shtml",
+            "score": 1.0
+          },
+          {
+            "title": "看空人工智能概念,但斌直呼：一旦被套,不知猴年马月解套！_牛市...",
+            "url": "/link?url=hedJjaC291MxGeA-SVBACwNdbrwv1ozqnY8kqmjk2QVYEjW4L09UpATKblODFizzIDgbjCIlLSc.",
+            "score": -0.894
+          },
+          {
+            "title": "但斌最新发声:AI的10年牛市才刚开始!投资心得为3个密码!|a股|私...",
+            "url": "/link?url=hedJjaC291NbWrwHYHKCyPQj_ei8OKC1mozqur8Ncza_UMzP6ElDgrib7OhIGtvc0ztd7q5nl6o.",
+            "score": 0.707
+          },
+          {
+            "title": "但斌最新观点解读 但斌这一轮的最新观点集中在 2026 年 6 ...",
+            "url": "https://xueqiu.com/1656037103/399317712",
+            "score": 0.0
+          }
+        ]
+      },
+      {
+        "name": "陈宇",
+        "style": "私募价值派",
+        "score": 0.141,
+        "stance": "neutral",
+        "sources": 5,
+        "snippets": [
+          {
+            "title": "神农投资陈宇:牛市王者归来!?切勿刻舟求剑,低估值、低价格...",
+            "url": "http://mp.weixin.qq.com/s?src=3&amp;timestamp=1785723332&amp;ver=1&amp;signature=-neuFM36QgEJm4TklC6PtwGF6q448-*dBVBtvHmtOdocSlg*IdbVwlvQX3iJxrLr88GtAzNq982ZD0ZYz6W2Syq05Meyd4yGzpLCsxwYcfqEqKMr-DQxb6eoxDQ5oCZqn3L3joEMVe36utlrkxijf3cs-7ZkJM5S*PVwQs0yJkk=",
+            "score": 0.707
+          },
+          {
+            "title": "神农投资的优势是什么?_知乎",
+            "url": "/link?url=hedJjaC291MBtMZVirtXo7CqjI0tE6P9Irl9kkee06Dtrc98QDiB27JHoyzodE74rHpvesDFo8t7Zq13x2Y3rg..",
+            "score": 0.0
+          },
+          {
+            "title": "想参加私募方面的理财私享会哪家更专业啊?_知乎",
+            "url": "/link?url=hedJjaC291MBtMZVirtXo7CqjI0tE6P9Bul2MezUYXA25l_l8FjhNq3mlRzfPLR2",
+            "score": 0.0
+          },
+          {
+            "title": "陈营长极品投资的微博_微博",
+            "url": "/link?url=DSOYnZeCC_qPrlV5CL4MK0rH8e96BR40_np13OcCZeUgOBuMIiUtJw..",
+            "score": 0.0
+          },
+          {
+            "title": "投资日记20210113_知乎",
+            "url": "/link?url=hedJjaC291OfPyaFZYFLI4KQWvqt63NBgqs_g_9cQ09ZOFWiNedqNA..",
+            "score": 0.0
+          }
+        ]
+      },
+      {
+        "name": "李大霄",
+        "style": "机构派",
+        "score": 0.141,
+        "stance": "neutral",
+        "sources": 5,
+        "snippets": [
+          {
+            "title": "“深V”反转!沪指楔形待突破,李大霄:挑破!_知乎",
+            "url": "/link?url=hedJjaC291OfPyaFZYFLI4KQWvqt63NBIyBEyODvwS0EngqjFUz1QQ..",
+            "score": 0.707
+          },
+          {
+            "title": "【90号股票】李大霄:最近的A股,怎么不涨了",
+            "url": "http://mp.weixin.qq.com/s?src=11&amp;timestamp=1785723332&amp;ver=6881&amp;signature=FaEfpgJtg4rbdcOoQ5IqAnsbf9V0w96zqLYQ9UKtR5Lh8D8JEKVymG8DdTCw0Lnb*IGQMag2JwX7Y798zyLhA7KBPezINbY*lt7QybKF9Lkvk7aUWQ7QAnws83R*jZHG&amp;new=1",
+            "score": 0.0
+          },
+          {
+            "title": "李大霄究竟是“神预言”还是“黑嘴”?唱多股市的行..._知乎",
+            "url": "/link?url=hedJjaC291OfPyaFZYFLI4KQWvqt63NBbg0E6kDyS3bVRNSn7vLDlg..",
+            "score": 0.0
+          },
+          {
+            "title": "如何看待李大霄对待股市的言论?_知乎",
+            "url": "/link?url=hedJjaC291MBtMZVirtXo7CqjI0tE6P9O_poi2Wh1jKtngc4fhG36HCEJKlPpIuDozJt_ftSIMGt5pUc3zy0dg..",
+            "score": 0.0
+          },
+          {
+            "title": "如何看待李大霄反对去散户化:中国股市是散户建立的?_知乎",
+            "url": "/link?url=hedJjaC291MBtMZVirtXo7CqjI0tE6P9Irl9kkee06C6BYSPYBrxOa3mlRzfPLR2",
+            "score": 0.0
+          }
+        ]
+      },
+      {
+        "name": "杨德龙",
+        "style": "机构派",
+        "score": 0.2,
+        "stance": "positive",
+        "sources": 5,
+        "snippets": [
+          {
+            "title": "杨德龙:国家队本轮救市成效显著建议大力增持A股和港股重要指...",
+            "url": "http://mp.weixin.qq.com/s?src=11&amp;timestamp=1785723337&amp;ver=6881&amp;signature=RsgXJvf0hDPAhDkyzgFzDuI22S3n*h0mFMcAiOhIvRL5Tks5vVCyF16qoE0u*09rthnG1LGr4N3rqYTX5R06FebuYELeybIicOakbTwOlemuuCDWVjDrcfpwRCKwNvb2&amp;new=1",
+            "score": 1.0
+          },
+          {
+            "title": "杨德龙丨美股的九年牛市与A股的三年熊市_哔哩哔哩_bilibili",
+            "url": "/link?url=hedJjaC291ObqPUCEo1zMuraEuczo-4WCU_PNz9JM0twD9LaEdqoWWJoX9PMeaCD",
+            "score": 0.0
+          },
+          {
+            "title": "杨德龙：中长期资金入市如何影响A股市场_哔哩哔哩_bilibili",
+            "url": "/link?url=hedJjaC291ObqPUCEo1zMuraEuczo-4WCU_PNz9JM0tH29pf612abrR_DxbM1KIJ",
+            "score": 0.0
+          },
+          {
+            "title": "[交易时间]边看边聊 杨德龙：2019年是A股“黄金十年”起点",
+            "url": "/link?url=a8xlm0X2uvd5xe4__9LFbuDVnBIotweFKPbX6AsMqgJ8ZspqLzv6WzZXpzSaEoIQXWEPgx9TTmjRyzYLOmNBvyHmfGkNvdZG",
+            "score": 0.0
+          },
+          {
+            "title": "杨德龙：MSCI将A股权重增至20%外资为何特别爱买白马股？_高清...",
+            "url": "/link?url=hedJjaC291NpdrCmyixjfnek8aHYAGFWeXvUZuTfA0nB-_KfFQMwo63mlRzfPLR2",
+            "score": 0.0
+          }
+        ]
+      }
+    ],
+    "avg_score": 0.102,
+    "stance": "neutral"
+  },
+  "combined_score": 56.9,
+  "label": "neutral",
+  "label_cn": "⚪ 正常",
+  "divergence": {
+    "market_temp": 57.6,
+    "kol_temp": 55.1,
+    "direction": "aligned",
+    "label_cn": "大V观点与市场方向一致"
+  }
+}
