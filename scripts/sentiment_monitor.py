@@ -9,6 +9,11 @@ from datetime import datetime, timezone, timedelta
 
 from src.services.china_sentiment_service import ChinaSentimentService
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(levelname)s %(name)s: %(message)s",
+)
+
 
 def main():
     now = datetime.now(timezone(timedelta(hours=8)))

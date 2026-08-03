@@ -326,8 +326,6 @@ class KOLSentimentTracker:
             if not adapter.is_available:
                 logger.debug("LLM 不可用，回退关键词打分")
                 return _score_text(text)
-            logger.info("LLM judge start, model=%s provider=%s",
-                        adapter.primary_provider, getattr(adapter, "_generation_backend_id", "?"))
 
             prompt = (
                 "你是A股市场情绪分析师。判断下面这位炒股大V的言论情绪立场。"
@@ -345,12 +343,8 @@ class KOLSentimentTracker:
             )
             content = (getattr(resp, "content", "") or "").strip()
             value = self._parse_llm_score(content)
-            if value is not None:
-                logger.info("LLM judge: %r -> %s", content[:60], value)
-            else:
-                logger.info("LLM judge 解析失败: %r, 回退关键词", content[:60])
         except Exception as e:
-            logger.debug("LLM judge 失败 %s，回退关键词: %s", type(e).__name__, e)
+            logger.warning("LLM judge 失败 %s，回退关键词: %s", type(e).__name__, e)
             value = None
 
         if value is not None:
