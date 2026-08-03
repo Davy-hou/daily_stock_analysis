@@ -18,6 +18,7 @@ from __future__ import annotations
 import html
 import logging
 import math
+import os
 import re
 import threading
 import time
@@ -259,7 +260,16 @@ class KOLSentimentTracker:
         return out
 
     def search(self, query: str, max_results: int = 5) -> list[dict]:
-        """多源搜索，返回首个成功源的结果"""
+        """多源搜索，返回首个成功源的结果
+
+        优先使用付费搜索源（Tavily/Bocha 等，中文命中率高且有 snippet，
+        通过 get_search_service() 读取仓库已配置的 API Key）；
+        未配置时降级到免费搜索源（DDG/必应/搜狗）。
+        """
+        paid = self._search_paid(query, max_results)
+        if paid:
+            return paid
+
         for name, fn in [
             ("duckduckgo", self._ddg),
             ("bing_rss", self._bing_rss),
@@ -275,6 +285,71 @@ class KOLSentimentTracker:
             except Exception as e:
                 logger.debug("search %s via %s failed: %s", query, name, e)
         return []
+
+    def _search_paid(self, query: str, max_results: int) -> list[dict]:
+        """利用仓库 SearchService 的付费搜索源"""
+        try:
+            from src.search_service import get_search_service
+            svc = get_search_service()
+        except Exception as e:
+            logger.debug("paid search init failed: %s", e)
+            return []
+        try:
+            resp = svc.search(query, max_results=max_results, days=7)
+            if not resp or not getattr(resp, "results", None):
+                return []
+            out = []
+            for r in resp.results:
+                title = getattr(r, "title", "") or ""
+                out.append({
+                    "title": title,
+                    "url": getattr(r, "url", "") or "",
+                    "snippet": getattr(r, "snippet", "") or "",
+                })
+            out = _clean_results(out)
+            if out:
+                logger.debug("search %s via paid(%s): %d 条",
+                             query, getattr(resp, "provider", "?"), len(out))
+            return out
+        except Exception as e:
+            logger.debug("paid search %s failed: %s", query, e)
+            return []
+
+    def _judge_text(self, text: str) -> float:
+        """用 LLM 判断单条言论情绪 [-1,1]，理解"大跌敢买"这类反转表述
+
+        LLM 不可用/超时/返回异常时回退到关键词打分 _score_text。
+        """
+        try:
+            from src.agent.llm_adapter import LLMToolAdapter
+            adapter = LLMToolAdapter()
+            if not adapter.is_available:
+                logger.debug("LLM 不可用，回退关键词打分")
+                return _score_text(text)
+
+            prompt = (
+                "你是A股市场情绪分析师。判断下面这位炒股大V的言论情绪立场。"
+                "只输出一个浮点数：正数为看多(最多+1.0)，负数为看空(最少-1.0)，"
+                "0为中性/无明确倾向。注意表达的反转：如'大跌但敢买'是看多，"
+                '"大涨但建议清仓"是看空。\\n\\n'
+                f"言论：{text[:800]}\\n\\n"
+                "输出格式：仅一个数字，例如 0.6 或 -0.4"
+            )
+            resp = adapter.call_text(
+                [{"role": "user", "content": prompt}],
+                temperature=0.0,
+                max_tokens=8,
+                timeout=20,
+            )
+            content = (getattr(resp, "content", "") or "").strip()
+            value = float(content)
+        except Exception as e:
+            logger.debug("LLM judge 失败 %s，回退关键词: %s", type(e).__name__, e)
+            value = None
+
+        if value is not None:
+            return max(-1.0, min(1.0, value))
+        return _score_text(text)
 
     def analyze_kol(self, kol: dict) -> dict:
         """分析单个大V情绪"""
@@ -297,9 +372,9 @@ class KOLSentimentTracker:
             title = r["title"]
             snippet = r.get("snippet", "")
             text = f"{title} {snippet}".strip()
-            s = _score_text(text)
+            s = self._judge_text(text)
             scores.append(s)
-            snippets.append({"title": title, "url": r["url"], "score": round(s, 2)})
+            snippets.append({"title": title, "url": r["url"], "score": round(s, 3)})
 
         avg = sum(scores) / len(scores)
         stance = _classify(avg)
@@ -610,3 +685,24 @@ class ChinaSentimentService:
         except Exception as e:
             logger.warning("飞书异常: %s", e)
             return False
+
+    def save_history(self, result: dict, data_dir: str = "data/sentiment") -> str | None:
+        """将当日情绪结果持久化为 JSON，用于历史回溯
+
+        写入 data/sentiment/<date>.json，返回写入的文件路径；失败返回 None。
+        若同一天已存在文件则覆盖更新。
+        """
+        import json as _json
+        date = result.get("date")
+        if not date:
+            date = datetime.now(timezone(timedelta(hours=8))).strftime("%Y%m%d")
+        try:
+            path = os.path.join(data_dir, f"{date}.json")
+            os.makedirs(data_dir, exist_ok=True)
+            with open(path, "w", encoding="utf-8") as f:
+                _json.dump(result, f, ensure_ascii=False, indent=2, default=str)
+            logger.info("情绪历史已保存: %s", path)
+            return path
+        except Exception as e:
+            logger.warning("保存情绪历史失败: %s", e)
+            return None

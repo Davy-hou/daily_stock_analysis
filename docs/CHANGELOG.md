@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 <!-- 新条目格式：- [类型] 描述（类型取值：新功能/改进/修复/文档/测试/chore）-->
 <!-- 每条独立一行追加到本段末尾，无需分类标题，合并时冲突最小 -->
 
+- [新功能] 市场情绪日报大V检索优先接入付费搜索源（Tavily/Bocha/Brave/SerpAPI），中文金融命中率提升，免费源降级为 fallback
+- [改进] 大V言论情绪改用 LLM 判定（理解"大跌敢买"反转表述），LLM 不可用时回退关键词打分
+- [新功能] 市场情绪日报结果持久化为 data/sentiment/<date>.json 并写回仓库，支持历史回溯
+
 ## [3.24.1] - 2026-06-28
 
 ### 修复

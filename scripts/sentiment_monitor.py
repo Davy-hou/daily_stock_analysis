@@ -59,6 +59,11 @@ def main():
     else:
         print(f"\n  ⏭  FEISHU_WEBHOOK_URL 未设置，跳过飞书推送", flush=True)
 
+    # 历史持久化
+    saved = svc.save_history(result)
+    if saved:
+        print(f"  💾 历史已保存: {saved}", flush=True)
+
     print(f"\n  ✅ 情绪分析完成", flush=True)
 
 
