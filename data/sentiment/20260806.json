@@ -1,0 +1,269 @@
+{
+  "date": "20260806",
+  "market": {
+    "date": "20260806",
+    "zt_count": 79,
+    "dt_count": 1,
+    "volume_ratio": 1.01,
+    "temperature": 57.2,
+    "label": "neutral",
+    "label_cn": "⚪ 正常",
+    "breadth": {
+      "zt_count": 79,
+      "dt_count": 1
+    },
+    "volume": {
+      "amount": 58855528000.0,
+      "ma20": 58299719220.0,
+      "ratio": 1.009533644199942
+    }
+  },
+  "kols": {
+    "kols": [
+      {
+        "name": "峰哥亡命天涯",
+        "style": "散户反指",
+        "score": 0.4,
+        "stance": "positive",
+        "sources": 10,
+        "snippets": [
+          {
+            "title": "网红峰哥亏数百万清仓销户，折射亿万股民心声_腾讯新闻",
+            "url": "https://news.qq.com/rain/a/20260709A02Q1R00",
+            "score": -1.0
+          },
+          {
+            "title": "网红峰哥亏数百万清仓销户，折射亿万股民心声 7月8日，A ...",
+            "url": "https://xueqiu.com/6797448550/399225831",
+            "score": -1.0
+          },
+          {
+            "title": "网红\"峰哥\"发长文彻底认输清仓：亏损认了，我买的不是股票 ...",
+            "url": "https://news.qq.com/rain/a/20260714A03B5B00?adChannelId=finance",
+            "score": -1.0
+          },
+          {
+            "title": "网红\"峰哥\"发长文彻底认输清仓：亏损认了，我买的不是股票 ...",
+            "url": "https://www.toutiao.com/article/7662254298437845556/",
+            "score": 1.0
+          },
+          {
+            "title": "知名网红\"峰哥\"宣布清仓退市：一键清仓了，拜拜吧，我啥都 ...",
+            "url": "https://xueqiu.com/4467173154/399104916",
+            "score": 1.0
+          }
+        ]
+      },
+      {
+        "name": "月风_投资笔记",
+        "style": "私募宏观",
+        "score": 0.444,
+        "stance": "positive",
+        "sources": 9,
+        "snippets": [
+          {
+            "title": "2022.10.27嘉越投资吴悦风:接下来A股主线向哪演绎_哔哩哔哩_bilibili",
+            "url": "/link?url=hedJjaC291ObqPUCEo1zMuraEuczo-4WCU_PNz9JM0t1-nYjoVGSQV8lgUOO-lbj",
+            "score": 1.0
+          },
+          {
+            "title": "业绩崩盘的月风错在哪?",
+            "url": "http://mp.weixin.qq.com/s?src=11&amp;timestamp=1786010788&amp;ver=6888&amp;signature=PD0PJN7-jwEhWTnf3LSJBWk4lUFvvA52PbgyPxgdJgBJu6Itxbi0P-GPkKpec7SCDlmT8-7YYRyFBcxwBgbQ9NzikK6B8hCYh0ewUX*UObPrGTLzBYIdeQW6cGcwtrYk&amp;new=1",
+            "score": 1.0
+          },
+          {
+            "title": "2021.6.28工银瑞信赵蓓:涨了这么多,医药基金还能投么?_哔哩哔哩...",
+            "url": "/link?url=hedJjaC291ObqPUCEo1zMuraEuczo-4WCU_PNz9JM0s0u8s_knEM-Oshb2yxWeAn",
+            "score": 1.0
+          },
+          {
+            "title": "24年9月24日,你把所有的存款都投进了A股_哔哩哔哩_bilibili",
+            "url": "/link?url=hedJjaC291ObqPUCEo1zMuraEuczo-4WCU_PNz9JM0uWjhETZ6qZsm17KVe1OTCK8x2NB-PRwZT6xKUHvPurlBhfbabas_3rX2dPn12l6yoKW4YQe618Tg..",
+            "score": 1.0
+          },
+          {
+            "title": "月风_投资笔记 - 雪球",
+            "url": "https://xueqiu.com/u/fengloverita",
+            "score": 0.0
+          }
+        ]
+      },
+      {
+        "name": "淘气天尊",
+        "style": "散户技术派",
+        "score": 0.989,
+        "stance": "positive",
+        "sources": 10,
+        "snippets": [
+          {
+            "title": "淘气天尊：等待午后抄底信号确认!_淘气天尊_新浪博客",
+            "url": "https://blog.sina.cn/dpool/blog/s/blog_606ca3a0010300oe.html",
+            "score": 1.0
+          },
+          {
+            "title": "淘气天尊：等待午后抄底信号确认!_财富号_东方财富网",
+            "url": "https://caifuhao.eastmoney.com/news/20260707120232976966090",
+            "score": 1.0
+          },
+          {
+            "title": "淘气天尊：抄底信号出现敢于进场，然后等涨!",
+            "url": "https://www.sohu.com/a/998075931_153995",
+            "score": 1.0
+          },
+          {
+            "title": "淘气天尊：短线抄底进场后，等待反弹加速!",
+            "url": "https://cj.sina.com.cn/articles/view/7879922977/1d5ae152102701ckz8",
+            "score": 1.0
+          },
+          {
+            "title": "淘气天尊：如期大反攻后，千万别上头!_中金在线财经号",
+            "url": "http://mp.cnfol.com/34169/article/1785470547-142604246.html",
+            "score": 1.0
+          }
+        ]
+      },
+      {
+        "name": "但斌",
+        "style": "私募价值派",
+        "score": 0.533,
+        "stance": "positive",
+        "sources": 15,
+        "snippets": [
+          {
+            "title": "但斌在东方港湾 2026 年会上的十大核心观点 - 今日头条",
+            "url": "https://www.toutiao.com/article/7604708980920713782/",
+            "score": 1.0
+          },
+          {
+            "title": "但斌ai：宁要仙桃 不要烂杏 根据但斌在东方港湾2026年投资 ...",
+            "url": "https://xueqiu.com/3191867971/375461444",
+            "score": 1.0
+          },
+          {
+            "title": "知名投资人但斌：华尔街看好a股6000点，牛市不好说，不要 ...",
+            "url": "https://www.sohu.com/a/814354333_120997595",
+            "score": 1.0
+          },
+          {
+            "title": "但斌（深圳东方港湾投资管理股份有限公司创始人、董事长）_百度百科",
+            "url": "https://baike.baidu.com/item/%E4%BD%86%E6%96%8C/13350957",
+            "score": 1.0
+          },
+          {
+            "title": "但斌 - 雪球",
+            "url": "https://xueqiu.com/u/1102105103",
+            "score": 1.0
+          }
+        ]
+      },
+      {
+        "name": "陈宇",
+        "style": "私募价值派",
+        "score": 1.0,
+        "stance": "positive",
+        "sources": 4,
+        "snippets": [
+          {
+            "title": "Pizzeria Italia - 香港最好的披薩！",
+            "url": "https://www.pizzeriaitalia.hk/zh-hk/",
+            "score": 1.0
+          },
+          {
+            "title": "首頁 | 拿坡里披薩",
+            "url": "https://www.0800076666.com.tw/",
+            "score": 1.0
+          },
+          {
+            "title": "達美樂披薩外送外帶 | 網路訂餐 | Domino's TW",
+            "url": "https://www.dominos.com.tw/",
+            "score": 1.0
+          },
+          {
+            "title": "香港餐廳搜尋: 披薩 | OpenRice 香港開飯喇",
+            "url": "https://www.openrice.com/zh/hongkong/restaurants?what=%E6%8A%AB%E8%96%A9",
+            "score": 1.0
+          }
+        ]
+      },
+      {
+        "name": "李大霄",
+        "style": "机构派",
+        "score": 1.0,
+        "stance": "positive",
+        "sources": 5,
+        "snippets": [
+          {
+            "title": "李大霄:A股或第一次在3000点以上筑底成功",
+            "url": "http://mp.weixin.qq.com/s?src=11&amp;timestamp=1786010803&amp;ver=6888&amp;signature=2faHzGgV85wWN*RRGJqfnN*DaQKESMk-gf4ArFIllI*HLtti0I*9PJK2qZIziPOyQTxbpnwVLkNMPJoU27b05*bS5iXSeO*r9*NnFCXYS0EtdzT8lveICpg8Jf*aoX1f&amp;new=1",
+            "score": 1.0
+          },
+          {
+            "title": "【迅动股票】李大霄:A股之前已经提前调整 无需恐慌_知乎",
+            "url": "/link?url=hedJjaC291OfPyaFZYFLI4KQWvqt63NB2iqDu-ZLlp0WWeDOsQti8w..",
+            "score": 1.0
+          },
+          {
+            "title": "李大霄说要抓住3000点以下的投资机会_知乎",
+            "url": "/link?url=hedJjaC291OfPyaFZYFLI4KQWvqt63NBfGCQB3UxVaP-mjJRTzNB2A..",
+            "score": 1.0
+          },
+          {
+            "title": "A股预言帝:牛市进入尾声?李大霄:大家不要卖房炒..._知乎",
+            "url": "/link?url=hedJjaC291OfPyaFZYFLI4KQWvqt63NBWr_bHd9SS4CAhzU0aCxI6A..",
+            "score": 1.0
+          },
+          {
+            "title": "如何看待李大霄反对去散户化:中国股市是散户建立的?_知乎",
+            "url": "/link?url=hedJjaC291MBtMZVirtXo7CqjI0tE6P9Irl9kkee06C6BYSPYBrxOa3mlRzfPLR2",
+            "score": 1.0
+          }
+        ]
+      },
+      {
+        "name": "杨德龙",
+        "style": "机构派",
+        "score": 1.0,
+        "stance": "positive",
+        "sources": 5,
+        "snippets": [
+          {
+            "title": "杨德龙:价值投资看,A股市场迎来了一个新的布局时机",
+            "url": "http://mp.weixin.qq.com/s?src=11&amp;timestamp=1786010801&amp;ver=6888&amp;signature=TIXverAgXq2XyekZ05Q7F3YFyxsHc33JRCWIFIJx38YH43wABsJrps9UYWRIAhcmtmjyhoQAN5RNJcVVBeRk*tg4Hop6FlxS8uxxhaZMWYaRV2uVNTSxT4BJJi2EEqAF&amp;new=1",
+            "score": 1.0
+          },
+          {
+            "title": "杨德龙:隔夜美股大跌对A股仅有短期影响_知乎",
+            "url": "/link?url=hedJjaC291OfPyaFZYFLI4KQWvqt63NBnzIBdjy-J6Zlj4NK-ZB0Vw..",
+            "score": 1.0
+          },
+          {
+            "title": "首席看2019|杨德龙:A股筑底 2019年新一轮慢牛起点_知乎",
+            "url": "/link?url=hedJjaC291OfPyaFZYFLI4KQWvqt63NBFKZ241knRDIKJSS0HrwA7g..",
+            "score": 1.0
+          },
+          {
+            "title": "[交易时间]边看边聊 杨德龙：2019年是A股“黄金十年”起点",
+            "url": "/link?url=a8xlm0X2uvd5xe4__9LFbuDVnBIotweFKPbX6AsMqgJ8ZspqLzv6WzZXpzSaEoIQXWEPgx9TTmjRyzYLOmNBvyHmfGkNvdZG",
+            "score": 1.0
+          },
+          {
+            "title": "前海开源基金杨德龙:想要适应当前的A股市场,就要..._知乎",
+            "url": "/link?url=hedJjaC291OfPyaFZYFLI4KQWvqt63NBZ3rBmbxh04TuvIJv0Ex7iw..",
+            "score": 1.0
+          }
+        ]
+      }
+    ],
+    "avg_score": 0.767,
+    "stance": "positive"
+  },
+  "combined_score": 66.5,
+  "label": "neutral",
+  "label_cn": "⚪ 正常",
+  "divergence": {
+    "market_temp": 57.2,
+    "kol_temp": 88.3,
+    "direction": "aligned",
+    "label_cn": "大V观点与市场方向一致"
+  }
+}
