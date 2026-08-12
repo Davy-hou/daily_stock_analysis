@@ -1,0 +1,199 @@
+{
+  "date": "20260812",
+  "market": {
+    "date": "20260812",
+    "zt_count": 92,
+    "dt_count": 0,
+    "volume_ratio": 0.91,
+    "temperature": 58.3,
+    "label": "neutral",
+    "label_cn": "⚪ 正常",
+    "breadth": {
+      "zt_count": 92,
+      "dt_count": 0
+    },
+    "volume": {
+      "amount": 52949094400.0,
+      "ma20": 57920922075.0,
+      "ratio": 0.9141618003152274
+    }
+  },
+  "kols": {
+    "kols": [
+      {
+        "name": "淘气天尊",
+        "style": "散户技术派",
+        "score": 0.825,
+        "stance": "positive",
+        "sources": 10,
+        "snippets": [
+          {
+            "title": "淘气天尊：抄底还是观望？_淘气天尊_新浪博客",
+            "url": "https://blog.sina.com.cn/s/blog_606ca3a0010300of.html",
+            "score": 1.0
+          },
+          {
+            "title": "淘气天尊：单日大跌后，抄底信号确认!_淘气天尊_新浪博客",
+            "url": "https://blog.sina.cn/dpool/blog/s/blog_606ca3a0010300ow.html",
+            "score": 1.0
+          },
+          {
+            "title": "淘气天尊 - 同花顺投顾平台",
+            "url": "https://t.10jqka.com.cn/m/live/brokerage.html?fid=5622",
+            "score": 1.0
+          },
+          {
+            "title": "淘气天尊：市场午后大反攻，明天还要涨! 周二市场呈现跳水 ...",
+            "url": "https://xueqiu.com/7621060682/354028564",
+            "score": 1.0
+          },
+          {
+            "title": "淘气天尊：市场午后大反攻，明天还要涨!（附周三直播）",
+            "url": "https://fund.eastmoney.com/ba/news,gssz,1604113315.html",
+            "score": 1.0
+          }
+        ]
+      },
+      {
+        "name": "月风_投资笔记",
+        "style": "私募宏观",
+        "score": 0.5,
+        "stance": "positive",
+        "sources": 10,
+        "snippets": [
+          {
+            "title": "逆袭!吴悦风管理的\"三毛基\"半年反弹171％ 陈宇称牛市下半场 ...",
+            "url": "https://fund.eastmoney.com/a/202510193537961445.html",
+            "score": 1.0
+          },
+          {
+            "title": "从\"3毛基\"到净值翻倍：网红私募月风管理产品1个半月大涨 ...",
+            "url": "https://finance.sina.com.cn/roll/2026-05-12/doc-inhxsawe9841744.shtml",
+            "score": 1.0
+          },
+          {
+            "title": "吴悦风的财新博客-财新网",
+            "url": "https://wuyuefeng.blog.caixin.com/archive/main",
+            "score": 1.0
+          },
+          {
+            "title": "嘉越月风投资创世号_基金净值_私募基金-私募排排网 ...",
+            "url": "https://dc.simuwang.com/product/HF00009TVY.html",
+            "score": 1.0
+          },
+          {
+            "title": "六个月奇迹大涨近150%，\"脚踝斩\"的大v基金这次要回本了 ...",
+            "url": "https://xueqiu.com/1107854878/356676284",
+            "score": 1.0
+          }
+        ]
+      },
+      {
+        "name": "但斌",
+        "style": "私募价值派",
+        "score": 0.4,
+        "stance": "positive",
+        "sources": 10,
+        "snippets": [
+          {
+            "title": "但斌，最新回应!没有恐慌割肉、没有大幅减仓",
+            "url": "https://finance.sina.com.cn/stock/zqgd/2026-08-11/doc-inimyhkh5735465.shtml",
+            "score": -1.0
+          },
+          {
+            "title": "直面持有人质疑!但斌：满仓坚守ai未恐慌割肉，7月大跌仅做 ...",
+            "url": "https://stock.jrj.com.cn/2026/08/11201958078486.shtml",
+            "score": -1.0
+          },
+          {
+            "title": "但斌重磅预警：2.5万亿量化围猎小票，散户正成为最终买单者",
+            "url": "https://xueqiu.com/6959663840/378479733",
+            "score": 1.0
+          },
+          {
+            "title": "但斌最新观点解读 但斌这一轮的最新观点集中在 2026 年 6 ...",
+            "url": "https://xueqiu.com/1656037103/399317712",
+            "score": 1.0
+          },
+          {
+            "title": "但斌在东方港湾 2026 年会上的十大核心观点 - 今日头条",
+            "url": "https://www.toutiao.com/article/7604708980920713782/",
+            "score": 1.0
+          }
+        ]
+      },
+      {
+        "name": "峰哥亡命天涯",
+        "style": "散户反指",
+        "score": 0.124,
+        "stance": "neutral",
+        "sources": 10,
+        "snippets": [
+          {
+            "title": "网红峰哥亏数百万清仓销户，折射亿万股民心声_腾讯新闻",
+            "url": "https://news.qq.com/rain/a/20260709A02Q1R00",
+            "score": -1.0
+          },
+          {
+            "title": "网红峰哥亏数百万清仓销户，折射亿万股民心声 7月8日，A ...",
+            "url": "https://xueqiu.com/6797448550/399225831",
+            "score": -1.0
+          },
+          {
+            "title": "网红\"峰哥\"发长文彻底认输清仓：亏损认了，我买的不是股票 ...",
+            "url": "https://news.qq.com/rain/a/20260714A03B5B00?adChannelId=finance",
+            "score": -1.0
+          },
+          {
+            "title": "网红\"峰哥\"发长文彻底认输清仓：亏损认了，我买的不是股票 ...",
+            "url": "https://news.qq.com/rain/a/20260714A03B5B00",
+            "score": 1.0
+          },
+          {
+            "title": "网红博主峰哥亡命天涯7月清仓又满仓亏损近200万？为何被称 ...",
+            "url": "https://k.sina.cn/article_7879776328_1d5abd848068022y30.html",
+            "score": 1.0
+          }
+        ]
+      },
+      {
+        "name": "李大霄",
+        "style": "机构派",
+        "score": 0.0,
+        "stance": "neutral",
+        "sources": 0,
+        "snippets": [],
+        "raw": []
+      },
+      {
+        "name": "陈宇",
+        "style": "私募价值派",
+        "score": 0.0,
+        "stance": "neutral",
+        "sources": 0,
+        "snippets": [],
+        "raw": []
+      },
+      {
+        "name": "杨德龙",
+        "style": "机构派",
+        "score": 0.0,
+        "stance": "neutral",
+        "sources": 0,
+        "snippets": [],
+        "raw": []
+      }
+    ],
+    "avg_score": 0.462,
+    "stance": "positive"
+  },
+  "combined_score": 62.7,
+  "label": "neutral",
+  "label_cn": "⚪ 正常",
+  "divergence": {
+    "market_temp": 58.3,
+    "kol_temp": 73.1,
+    "direction": "aligned",
+    "label_cn": "大V观点与市场方向一致"
+  }
+}
